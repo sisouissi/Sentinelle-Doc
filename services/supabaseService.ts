@@ -1,8 +1,6 @@
 import { supabase } from './supabaseClient';
 import type { PatientData, SmartphoneData, NewPatient, ChatMessage } from '../types';
-import type { Language } from '../contexts/LanguageContext';
 import { getDoctorDashboardData as getMockDoctorData, getDefaultSmartphoneData } from './mockDataService';
-import { getWeatherForPatient } from './weatherService';
 
 // Helper to transform flat smartphone_data from DB to the nested structure the app uses
 function transformSmartphoneData(flatData: any): SmartphoneData {
@@ -93,6 +91,63 @@ function flattenSmartphoneData(nestedData: SmartphoneData): any {
     };
 }
 
+// Test function to diagnose Supabase connection and query issues
+export async function testSupabaseQueries() {
+    if (!supabase) {
+        console.error("❌ Supabase not initialized");
+        return;
+    }
+
+    console.log("🧪 Starting Supabase diagnostic tests...");
+
+    try {
+        // Test 1: Basic connection and patients table
+        console.log("🧪 Test 1: Basic patients query");
+        const { data: patients, error: patientsError } = await supabase
+            .from('patients')
+            .select('*')
+            .limit(3);
+        console.log("✅ Patients:", patients, "Error:", patientsError);
+
+        if (patientsError) {
+            console.error("❌ Patients table query failed:", patientsError);
+            return;
+        }
+
+        // Test 2: Measurements table
+        console.log("🧪 Test 2: Measurements table");
+        const { data: measurements, error: measurementsError } = await supabase
+            .from('measurements')
+            .select('*')
+            .limit(3);
+        console.log("✅ Measurements:", measurements, "Error:", measurementsError);
+
+        // Test 3: Smartphone data table
+        console.log("🧪 Test 3: Smartphone data table");
+        const { data: smartphoneData, error: smartphoneError } = await supabase
+            .from('smartphone_data')
+            .select('*')
+            .limit(3);
+        console.log("✅ Smartphone data:", smartphoneData, "Error:", smartphoneError);
+
+        // Test 4: Simple relation test
+        if (patients && patients.length > 0) {
+            console.log("🧪 Test 4: Simple relation test");
+            const { data: withMeasurements, error: relationError } = await supabase
+                .from('patients')
+                .select(`
+                    id, name,
+                    measurements ( timestamp, spo2, heart_rate )
+                `)
+                .eq('id', patients[0].id);
+            console.log("✅ With measurements:", withMeasurements, "Error:", relationError);
+        }
+
+    } catch (err) {
+        console.error("❌ Test error:", err);
+    }
+}
+
 // Robust function to fetch patients with relationships
 async function fetchAndTransformAllPatients(): Promise<PatientData[]> {
     if (!supabase) {
@@ -100,17 +155,20 @@ async function fetchAndTransformAllPatients(): Promise<PatientData[]> {
     }
 
     try {
-        // Fetch seulement les patients de base d'abord
+        console.log("Attempting to fetch patients with relationships...");
+        
         const { data: patients, error } = await supabase
             .from('patients')
             .select(`
                 *,
                 measurements ( timestamp, spo2, heart_rate ),
                 smartphone_data ( * )
-            `);
+            `)
+            .order('timestamp', { foreignTable: 'measurements', ascending: false })
+            .limit(20, { foreignTable: 'measurements' });
 
         if (error) {
-            console.warn("Relationship query failed, using sequential approach:", error);
+            console.warn("Relationship query failed, trying sequential approach:", error);
             return await fetchPatientsSequentially();
         }
 
@@ -119,107 +177,113 @@ async function fetchAndTransformAllPatients(): Promise<PatientData[]> {
             return [];
         }
 
-        console.log("Successfully fetched patients with basic relationships");
+        console.log("Successfully fetched patients with relationships");
         return patients.map((p: any) => ({
             ...p,
             measurements: p.measurements ? p.measurements.reverse() : [],
             smartphone: transformSmartphoneData(Array.isArray(p.smartphone_data) ? p.smartphone_data[0] : p.smartphone_data),
-            medications: [], // Temporairement vide
-            medication_logs: [], // Temporairement vide
+            medications: [],
+            medication_logs: [],
         }));
 
     } catch (err) {
         console.error("Error in fetchAndTransformAllPatients:", err);
+        console.log("Falling back to sequential fetch...");
         return await fetchPatientsSequentially();
     }
 }
-        
-        // Step 2: Fetch all relevant data from the last 7 days
-        const { data: measurementsData, error: measurementsError } = await supabase.from('measurements').select('*').gte('timestamp', sevenDaysAgoISO);
-        if (measurementsError) throw measurementsError;
-        
-        const { data: medicationsData, error: medicationsError } = await supabase.from('medications').select('*');
-        if (medicationsError) throw medicationsError;
 
-        const { data: logsData, error: logsError } = await supabase.from('medication_logs').select('*').gte('taken_at', sevenDaysAgoISO);
-        if (logsError) throw logsError;
-        
-        // Step 3: Map related data by patient_id for efficient lookup
-        const measurementsMap = new Map<number, any[]>();
-        measurementsData?.forEach(m => {
-             if (!measurementsMap.has(m.patient_id)) measurementsMap.set(m.patient_id, []);
-             measurementsMap.get(m.patient_id)?.push(m);
-        });
-        
-        const medicationsMap = new Map<number, any[]>();
-        medicationsData?.forEach(med => {
-            if (!medicationsMap.has(med.patient_id)) medicationsMap.set(med.patient_id, []);
-            medicationsMap.get(med.patient_id)?.push(med);
-        });
+// Sequential approach if relationship queries fail
+async function fetchPatientsSequentially(): Promise<PatientData[]> {
+    if (!supabase) return [];
 
-        const logsMap = new Map<number, any[]>();
-        logsData?.forEach(log => {
-            if (!logsMap.has(log.patient_id)) logsMap.set(log.patient_id, []);
-            logsMap.get(log.patient_id)?.push(log);
-        });
-        
-        // Step 4: Combine the data before transformation
-        const combinedPatients = patientsData.map(p => ({
-            ...p,
-            measurements: (measurementsMap.get(p.id) || []).sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()),
-            medications: medicationsMap.get(p.id) || [],
-            medication_logs: logsMap.get(p.id) || [],
-        }));
-        
-        const transformedPatients = combinedPatients.map((p: any) => transformPatientData(p));
+    try {
+        // 1. Get all patients first
+        const { data: patients, error: patientsError } = await supabase
+            .from('patients')
+            .select('*');
 
-        console.log("🌦️ Fetching live weather data for all patients...");
-        const patientsWithWeather = await Promise.all(
-            transformedPatients.map(async (patient) => {
+        if (patientsError) {
+            console.error("❌ Failed to fetch patients:", patientsError);
+            throw patientsError;
+        }
+
+        if (!patients || patients.length === 0) {
+            return [];
+        }
+
+        console.log(`📊 Fetching detailed data for ${patients.length} patients...`);
+
+        // 2. Fetch related data for each patient
+        const enrichedPatients = await Promise.all(
+            patients.map(async (patient) => {
                 try {
-                    const weather = await getWeatherForPatient(patient, lang);
-                    patient.smartphone.environment.weather = {
-                        temperatureC: weather.temperature,
-                        humidityPercent: weather.humidity
+                    const [measurementsResult, smartphoneResult, medicationsResult, logsResult] = await Promise.all([
+                        // Measurements
+                        supabase
+                            .from('measurements')
+                            .select('timestamp, spo2, heart_rate')
+                            .eq('patient_id', patient.id)
+                            .order('timestamp', { ascending: false })
+                            .limit(20),
+                        
+                        // Smartphone data
+                        supabase
+                            .from('smartphone_data')
+                            .select('*')
+                            .eq('patient_id', patient.id)
+                            .maybeSingle(), // Use maybeSingle() instead of single() to avoid errors if no data
+                        
+                        // Medications
+                        supabase
+                            .from('medications')
+                            .select('*')
+                            .eq('patient_id', patient.id),
+                        
+                        // Medication logs
+                        supabase
+                            .from('medication_logs')
+                            .select('*')
+                            .eq('patient_id', patient.id)
+                    ]);
+
+                    return {
+                        ...patient,
+                        measurements: measurementsResult.data?.reverse() || [],
+                        smartphone: transformSmartphoneData(smartphoneResult.data),
+                        medications: medicationsResult.data || [],
+                        medication_logs: logsResult.data || [],
                     };
-                    patient.smartphone.environment.airQualityIndex = weather.airQualityIndex;
-                    return patient;
-                } catch (weatherError) {
-                    console.warn(`Could not fetch weather for ${patient.name}. Using DB data.`, weatherError);
-                    return patient;
+                } catch (err) {
+                    console.error(`❌ Error fetching data for patient ${patient.id}:`, err);
+                    // Return patient with default data if there's an error
+                    return {
+                        ...patient,
+                        measurements: [],
+                        smartphone: getDefaultSmartphoneData(),
+                        medications: [],
+                        medication_logs: [],
+                    };
                 }
             })
         );
-        
-        console.log("✅ Successfully fetched and combined patient data for the last 7 days");
-        return patientsWithWeather;
 
-    } catch (err: any) {
-        console.error("❌ Error in fetchAndTransformAllPatients:", err.message || err, err);
+        console.log("✅ Successfully enriched all patients");
+        return enrichedPatients;
+
+    } catch (err) {
+        console.error("❌ Sequential fetch failed:", err);
         throw err;
     }
 }
-
 
 // Helper function to transform patient data consistently
 function transformPatientData(p: any): PatientData {
     const flatSmartphoneData = Array.isArray(p.smartphone_data) ? p.smartphone_data[0] : p.smartphone_data;
     
-    // Transform measurements to match the app's data model (heart_rate -> heartRate) and sort them
-    const transformedMeasurements = p.measurements 
-        ? p.measurements.map((m: { timestamp: string; spo2: number; heart_rate: number; }) => ({
-            timestamp: m.timestamp,
-            spo2: m.spo2,
-            heartRate: m.heart_rate 
-          })).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-        : [];
-    
-    // Remove original DB-style fields that have been transformed to avoid confusion
-    const { measurements, smartphone_data, ...restOfPatient } = p;
-
     return {
-        ...restOfPatient,
-        measurements: transformedMeasurements,
+        ...p,
+        measurements: p.measurements ? p.measurements.reverse() : [],
         smartphone: transformSmartphoneData(flatSmartphoneData),
         medications: p.medications || [],
         medication_logs: p.medication_logs || [],
@@ -227,16 +291,16 @@ function transformPatientData(p: any): PatientData {
 }
 
 // Main export function for doctor dashboard
-export async function getDoctorDashboardData(lang: Language = 'fr'): Promise<PatientData[]> {
+export async function getDoctorDashboardData(): Promise<PatientData[]> {
     if (!supabase) {
         console.warn("⚠️ Supabase is not configured. Falling back to mock data for doctor dashboard.");
         return getMockDoctorData();
     }
 
     try {
-        return await fetchAndTransformAllPatients(lang);
-    } catch (err: any) {
-        console.error("❌ Failed to fetch real data, falling back to mock data:", err.message || err, err);
+        return await fetchAndTransformAllPatients();
+    } catch (err) {
+        console.error("❌ Failed to fetch real data, falling back to mock data:", err);
         return getMockDoctorData();
     }
 }
@@ -245,6 +309,7 @@ export async function getDoctorDashboardData(lang: Language = 'fr'): Promise<Pat
 export async function getPatientByCode(pairingCode: string): Promise<PatientData | null> {
     if (!supabase) {
         console.error("❌ Supabase client not initialized.");
+        // Fallback for local dev
         const mockPatients = getMockDoctorData();
         const found = mockPatients.find(p => p.id === 1);
         if (found) {
@@ -255,62 +320,35 @@ export async function getPatientByCode(pairingCode: string): Promise<PatientData
     }
 
     try {
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        const sevenDaysAgoISO = sevenDaysAgo.toISOString();
-
-        // Step 1: Fetch patient with smartphone data
-        const { data: patientData, error: patientError } = await supabase
+        const { data: patient, error } = await supabase
             .from('patients')
             .select(`
                 *,
-                smartphone_data ( * )
+                measurements ( timestamp, spo2, heart_rate ),
+                smartphone_data ( * ),
+                medications ( * ),
+                medication_logs ( * )
             `)
             .eq('code', pairingCode.toUpperCase())
-            .maybeSingle();
+            .order('timestamp', { foreignTable: 'measurements', ascending: false })
+            .limit(60, { foreignTable: 'measurements' })
+            .maybeSingle(); // Use maybeSingle() to avoid errors if no data found
         
-        if (patientError) throw patientError;
+        if (error) {
+            console.error('❌ Error fetching patient by pairing code:', error);
+            return null;
+        }
 
-        if (!patientData) {
+        if (!patient) {
             console.log(`ℹ️ Pairing code ${pairingCode} not found.`);
             return null;
         }
 
-        // Step 2: Fetch related data for this specific patient for the last 7 days
-        const patientId = patientData.id;
-        const { data: measurementsData, error: measurementsError } = await supabase
-            .from('measurements')
-            .select('*')
-            .eq('patient_id', patientId)
-            .gte('timestamp', sevenDaysAgoISO);
-        if (measurementsError) throw measurementsError;
-
-        const { data: medicationsData, error: medicationsError } = await supabase
-            .from('medications')
-            .select('*')
-            .eq('patient_id', patientId);
-        if (medicationsError) throw medicationsError;
-
-        const { data: logsData, error: logsError } = await supabase
-            .from('medication_logs')
-            .select('*')
-            .eq('patient_id', patientId)
-            .gte('taken_at', sevenDaysAgoISO);
-        if (logsError) throw logsError;
-        
-        // Step 3: Combine and transform
-        const combinedPatient = {
-            ...patientData,
-            measurements: measurementsData || [],
-            medications: medicationsData || [],
-            medication_logs: logsData || [],
-        };
-
         console.log(`✅ Found patient for code ${pairingCode}`);
-        return transformPatientData(combinedPatient);
+        return transformPatientData(patient);
 
-    } catch (err: any) {
-        console.error('❌ Exception in getPatientByCode:', err.message || err, err);
+    } catch (err) {
+        console.error('❌ Exception in getPatientByCode:', err);
         return null;
     }
 }
@@ -356,7 +394,7 @@ async function generateCode(): Promise<string> {
 }
 
 // Add measurement
-export async function addMeasurement(patient_id: number, spo2: number, heartRate: number) {
+export async function addMeasurement(patient_id: number, spo2: number, heart_rate: number) {
     if (!supabase) {
         console.error("❌ Supabase client not initialized. Measurement not sent.");
         return;
@@ -365,7 +403,7 @@ export async function addMeasurement(patient_id: number, spo2: number, heartRate
     try {
         const { error } = await supabase
             .from('measurements')
-            .insert([{ patient_id, spo2, heart_rate: heartRate }]);
+            .insert([{ patient_id, spo2, heart_rate }]);
 
         if (error) {
             console.error('❌ Error adding measurement:', error);
@@ -373,8 +411,8 @@ export async function addMeasurement(patient_id: number, spo2: number, heartRate
         }
 
         console.log(`✅ Added measurement for patient ${patient_id}`);
-    } catch (err: any) {
-        console.error('❌ Exception in addMeasurement:', err.message || err, err);
+    } catch (err) {
+        console.error('❌ Exception in addMeasurement:', err);
         throw err;
     }
 }
@@ -389,6 +427,7 @@ export async function addPatient(newPatient: NewPatient): Promise<PatientData | 
     try {
         const code = await generateCode();
 
+        // 1. Create the patient first
         const patientToInsert = {
             name: newPatient.name,
             age: newPatient.age,
@@ -404,8 +443,12 @@ export async function addPatient(newPatient: NewPatient): Promise<PatientData | 
             .select()
             .single();
 
-        if (patientError) throw patientError;
+        if (patientError) {
+            console.error('❌ Error creating patient:', patientError);
+            throw patientError;
+        }
 
+        // 2. Create default smartphone data
         const defaultSmartphoneData = getDefaultSmartphoneData();
         const flatSmartphoneData = {
             ...flattenSmartphoneData(defaultSmartphoneData),
@@ -417,12 +460,15 @@ export async function addPatient(newPatient: NewPatient): Promise<PatientData | 
             .insert(flatSmartphoneData);
 
         if (smartphoneError) {
+            console.error('❌ Error creating smartphone data:', smartphoneError);
+            // Clean up orphaned patient record
             await supabase.from('patients').delete().eq('id', patient.id);
             throw smartphoneError;
         }
 
         console.log(`✅ Successfully created patient with code ${code}`);
 
+        // 3. Return the newly created patient
         return {
             ...patient,
             measurements: [],
@@ -431,56 +477,46 @@ export async function addPatient(newPatient: NewPatient): Promise<PatientData | 
             medication_logs: []
         };
 
-    } catch (err: any) {
-        console.error('❌ Exception in addPatient:', err.message || err, err);
+    } catch (err) {
+        console.error('❌ Exception in addPatient:', err);
         throw err;
     }
 }
 
-// Get chat history
-export async function getChatHistory(patient_id: number, lang: Language): Promise<ChatMessage[]> {
+// Get chat history (mock implementation)
+export async function getChatHistory(patient_id: number): Promise<ChatMessage[]> {
     const now = new Date();
-    // FIX: Explicitly type the mock history object to match ChatMessage[] and resolve role type error.
-    const mockHistories: { [key in Language]: ChatMessage[] } = {
-      fr: [
+    const mockHistory: ChatMessage[] = [
         { role: 'model', text: 'Bonjour ! Comment vous sentez-vous aujourd\'hui ?', timestamp: new Date(now.getTime() - 5 * 60000) },
         { role: 'user', text: 'Je suis un peu plus essoufflé que d\'habitude.', timestamp: new Date(now.getTime() - 4 * 60000) },
         { role: 'model', text: 'Merci de me le faire savoir. Avez-vous pris votre traitement ce matin ?', timestamp: new Date(now.getTime() - 3 * 60000) },
-      ],
-      en: [
-        { role: 'model', text: 'Hello! How are you feeling today?', timestamp: new Date(now.getTime() - 5 * 60000) },
-        { role: 'user', text: 'I feel a bit more breathless than usual.', timestamp: new Date(now.getTime() - 4 * 60000) },
-        { role: 'model', text: 'Thank you for letting me know. Did you take your medication this morning?', timestamp: new Date(now.getTime() - 3 * 60000) },
-      ],
-      ar: [
-        { role: 'model', text: 'مرحباً! كيف تشعر اليوم؟', timestamp: new Date(now.getTime() - 5 * 60000) },
-        { role: 'user', text: 'أشعر بضيق في التنفس أكثر من المعتاد.', timestamp: new Date(now.getTime() - 4 * 60000) },
-        { role: 'model', text: 'شكراً لإخباري. هل تناولت أدويتك هذا الصباح؟', timestamp: new Date(now.getTime() - 3 * 60000) },
-      ]
-    };
+        { role: 'user', text: 'Oui, comme d\'habitude', timestamp: new Date(now.getTime() - 2 * 60000) },
+        { role: 'model', text: 'D\'accord. Essayez de vous reposer un peu. Si l\'essoufflement s\'aggrave, n\'hésitez pas à suivre votre plan d\'action ou à contacter votre médecin.', timestamp: new Date(now.getTime() - 1 * 60000) }
+    ];
 
     if (supabase) {
         try {
+            // Try to fetch from Supabase if chat_messages table exists
             const { data: chatHistory, error } = await supabase
                 .from('chat_messages')
                 .select('role, content, created_at')
                 .eq('patient_id', patient_id)
                 .order('created_at', { ascending: true });
                 
-            if (!error && chatHistory && chatHistory.length > 0) {
+            if (!error && chatHistory) {
                 return chatHistory.map(msg => ({
                     role: msg.role as 'user' | 'model',
                     text: msg.content,
                     timestamp: new Date(msg.created_at),
                 }));
             }
-        } catch (err: any) {
-            console.warn(`⚠️ Chat messages table not available. Using mock data for patient ${patient_id}`, err.message || err);
+        } catch (err) {
+            console.warn(`⚠️ Chat messages table not available. Using mock data for patient ${patient_id}`);
         }
     }
 
     console.warn(`⚠️ Using mock chat history for patient ID ${patient_id}`);
-    return mockHistories[lang];
+    return mockHistory;
 }
 
 // Real-time listener
@@ -499,11 +535,10 @@ export function listenToPatientChanges(callback: (patients: PatientData[]) => vo
                 async (payload) => {
                     console.log('📡 Real-time change received:', payload.table);
                     try {
-                        // Assuming a default language for background updates
-                        const updatedPatients = await fetchAndTransformAllPatients('fr');
+                        const updatedPatients = await fetchAndTransformAllPatients();
                         callback(updatedPatients);
-                    } catch (err: any) {
-                        console.error('❌ Error handling real-time update:', err.message || err, err);
+                    } catch (err) {
+                        console.error('❌ Error handling real-time update:', err);
                     }
                 }
             )
@@ -515,8 +550,8 @@ export function listenToPatientChanges(callback: (patients: PatientData[]) => vo
             console.log("📡 Real-time listener unsubscribed");
             supabase.removeChannel(channel);
         };
-    } catch (err: any) {
-        console.error("❌ Failed to set up real-time listener:", err.message || err, err);
+    } catch (err) {
+        console.error("❌ Failed to set up real-time listener:", err);
         return () => {};
     }
 }
