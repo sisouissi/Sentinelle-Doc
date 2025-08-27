@@ -1,0 +1,7 @@
+{
+  "name": "Sentinelle Version Médecin",
+  "description": "An intelligent application for remote monitoring of COPD patients, enabling doctors to predict severe exacerbations and optimize care.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
