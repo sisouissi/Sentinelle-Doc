@@ -94,30 +94,45 @@ function flattenSmartphoneData(nestedData: SmartphoneData): any {
 }
 
 // Robust function to fetch patients with relationships
-async function fetchAndTransformAllPatients(lang: Language): Promise<PatientData[]> {
+async function fetchAndTransformAllPatients(): Promise<PatientData[]> {
     if (!supabase) {
         throw new Error("Supabase client not initialized");
     }
 
     try {
-        console.log("🔄 Attempting to fetch patients and related data...");
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        const sevenDaysAgoISO = sevenDaysAgo.toISOString();
-
-        // Step 1: Fetch patients with smartphone data
-        const { data: patientsData, error: patientsError } = await supabase
+        // Fetch seulement les patients de base d'abord
+        const { data: patients, error } = await supabase
             .from('patients')
             .select(`
                 *,
+                measurements ( timestamp, spo2, heart_rate ),
                 smartphone_data ( * )
             `);
 
-        if (patientsError) throw patientsError;
-        if (!patientsData || patientsData.length === 0) {
-            console.log("ℹ️ No patients found");
+        if (error) {
+            console.warn("Relationship query failed, using sequential approach:", error);
+            return await fetchPatientsSequentially();
+        }
+
+        if (!patients || patients.length === 0) {
+            console.log("No patients found");
             return [];
         }
+
+        console.log("Successfully fetched patients with basic relationships");
+        return patients.map((p: any) => ({
+            ...p,
+            measurements: p.measurements ? p.measurements.reverse() : [],
+            smartphone: transformSmartphoneData(Array.isArray(p.smartphone_data) ? p.smartphone_data[0] : p.smartphone_data),
+            medications: [], // Temporairement vide
+            medication_logs: [], // Temporairement vide
+        }));
+
+    } catch (err) {
+        console.error("Error in fetchAndTransformAllPatients:", err);
+        return await fetchPatientsSequentially();
+    }
+}
         
         // Step 2: Fetch all relevant data from the last 7 days
         const { data: measurementsData, error: measurementsError } = await supabase.from('measurements').select('*').gte('timestamp', sevenDaysAgoISO);
