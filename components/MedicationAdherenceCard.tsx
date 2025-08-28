@@ -131,7 +131,7 @@ export function MedicationAdherenceCard({ patient }: MedicationAdherenceCardProp
                             <thead>
                                 <tr className="bg-zinc-100/70">
                                     <th className="text-left rtl:text-right p-2 font-semibold text-zinc-600">{t('medicationAdherence.medication')}</th>
-                                    {adherenceData[0]?.days.map(({ date }) => (
+                                    {adherenceData[0].days.map(({ date }) => (
                                         <th key={date.toISOString()} className="p-2 font-medium text-zinc-500">
                                             {t(`days.short.${dayKeys[date.getDay()]}`)}
                                             <div className="text-xs text-zinc-400">{date.getDate()}</div>
