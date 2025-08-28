@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { HeatmapDataPoint } from '../types';
 import { TrendingUp, TrendingDown, Activity, Map } from './icons';
@@ -8,7 +9,7 @@ interface LocationHeatmapProps {
 }
 
 const getColor = (value: number) => {
-    if (value === 0) return 'bg-slate-100/80';
+    if (value === 0) return 'bg-zinc-100/80';
     // Blue (cold) to Red (hot) gradient for activity
     const hue = (1 - value) * 240;
     const lightness = 60 + value * 15;
@@ -17,7 +18,7 @@ const getColor = (value: number) => {
 
 const SingleHeatmap = ({ dayLabel, data }: HeatmapDataPoint) => (
   <div className="flex-1 min-w-[120px]">
-    <h4 className="text-sm font-semibold text-slate-600 mb-2 text-center">{dayLabel}</h4>
+    <h4 className="text-sm font-semibold text-zinc-600 mb-2 text-center">{dayLabel}</h4>
     <div className="grid grid-cols-12 gap-0.5">
       {data.map((row, rowIndex) =>
         row.map((value, colIndex) => (
@@ -34,11 +35,11 @@ const SingleHeatmap = ({ dayLabel, data }: HeatmapDataPoint) => (
 );
 
 const InterpretationCard = ({ icon, title, text }: { icon: React.ReactNode, title: string, text: string }) => (
-    <div className="bg-slate-100/70 p-3 rounded-lg flex items-start gap-3">
-        <div className="flex-shrink-0 mt-1 text-blue-600">{icon}</div>
+    <div className="bg-zinc-100/70 p-3 rounded-lg flex items-start gap-3 transition-all duration-200 hover:bg-zinc-200/60 hover:shadow-sm">
+        <div className="flex-shrink-0 mt-1 text-indigo-600">{icon}</div>
         <div>
-            <h5 className="font-semibold text-slate-800 text-sm">{title}</h5>
-            <p className="text-xs text-slate-600">{text}</p>
+            <h5 className="font-semibold text-zinc-800 text-sm">{title}</h5>
+            <p className="text-xs text-zinc-600">{text}</p>
         </div>
     </div>
 );
@@ -87,12 +88,12 @@ export function LocationHeatmap({ heatmapData }: LocationHeatmapProps): React.Re
     const TrendIcon = {
         up: <TrendingUp className="w-6 h-6 text-green-500" />,
         down: <TrendingDown className="w-6 h-6 text-red-500" />,
-        stable: <Activity className="w-6 h-6 text-blue-500" />,
+        stable: <Activity className="w-6 h-6 text-indigo-500" />,
     }[trendAnalysis.trend];
 
     return (
         <div>
-            <h3 className="text-md font-semibold text-slate-700 mb-3">{t('locationHeatmap.title')}</h3>
+            <h3 className="text-md font-semibold text-zinc-700 mb-3">{t('locationHeatmap.title')}</h3>
             
             <div className="flex flex-col md:flex-row gap-4 justify-between">
                 {heatmapData.map(day => (
@@ -100,9 +101,9 @@ export function LocationHeatmap({ heatmapData }: LocationHeatmapProps): React.Re
                 ))}
             </div>
 
-            <div className="flex items-center justify-center space-x-4 mt-2 text-xs text-slate-500">
+            <div className="flex items-center justify-center space-x-4 mt-2 text-xs text-zinc-500">
                 <span>{t('locationHeatmap.legendLow')}</span>
-                <div className="w-24 h-2 rounded-full bg-gradient-to-r from-blue-400 via-green-400 to-red-500"></div>
+                <div className="w-24 h-2 rounded-full bg-gradient-to-r from-indigo-400 via-green-400 to-red-500"></div>
                 <span>{t('locationHeatmap.legendHigh')}</span>
             </div>
             

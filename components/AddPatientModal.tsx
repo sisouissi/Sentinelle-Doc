@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import type { NewPatient, PatientData } from '../types';
 import { User, XCircle, CheckCircle, ClipboardCopy } from './icons';
@@ -105,61 +106,61 @@ export function AddPatientModal({ isOpen, onClose, onAddPatient }: AddPatientMod
   const renderForm = () => (
      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <div>
-            <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">{t('addPatientModal.fullName')}</label>
+            <label htmlFor="name" className="block text-sm font-medium text-zinc-700 mb-1">{t('addPatientModal.fullName')}</label>
             <input
               type="text"
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               required
             />
         </div>
         <div>
-            <label htmlFor="age" className="block text-sm font-medium text-slate-700 mb-1">{t('addPatientModal.age')}</label>
+            <label htmlFor="age" className="block text-sm font-medium text-zinc-700 mb-1">{t('addPatientModal.age')}</label>
             <input
               type="number"
               id="age"
               value={age}
               onChange={(e) => setAge(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               required
             />
         </div>
         <div>
-            <label htmlFor="condition" className="block text-sm font-medium text-slate-700 mb-1">{t('addPatientModal.condition')}</label>
+            <label htmlFor="condition" className="block text-sm font-medium text-zinc-700 mb-1">{t('addPatientModal.condition')}</label>
             <input
               type="text"
               id="condition"
               value={condition}
               onChange={(e) => setCondition(e.target.value)}
               placeholder={t('addPatientModal.conditionPlaceholder')}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               required
             />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label htmlFor="city" className="block text-sm font-medium text-slate-700 mb-1">{t('addPatientModal.city')}</label>
+                <label htmlFor="city" className="block text-sm font-medium text-zinc-700 mb-1">{t('addPatientModal.city')}</label>
                 <input
                   type="text"
                   id="city"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   placeholder={t('addPatientModal.cityPlaceholder')}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                   required
                 />
             </div>
              <div>
-                <label htmlFor="country" className="block text-sm font-medium text-slate-700 mb-1">{t('addPatientModal.country')}</label>
+                <label htmlFor="country" className="block text-sm font-medium text-zinc-700 mb-1">{t('addPatientModal.country')}</label>
                 <input
                     id="country"
                     list="countries-list"
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
                     placeholder={t('addPatientModal.countryPlaceholder')}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
+                    className="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white"
                     required
                 />
                 <datalist id="countries-list">
@@ -175,14 +176,14 @@ export function AddPatientModal({ isOpen, onClose, onAddPatient }: AddPatientMod
               type="button"
               onClick={handleClose}
               disabled={isSaving}
-              className="px-4 py-2 text-sm font-semibold text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 disabled:opacity-50"
+              className="px-4 py-2 text-sm font-semibold text-zinc-700 bg-zinc-100 rounded-lg hover:bg-zinc-200 disabled:opacity-50"
             >
               {t('addPatientModal.cancel')}
             </button>
             <button
               type="submit"
               disabled={isSaving}
-              className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-wait"
+              className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-lg hover:from-indigo-700 hover:to-indigo-800 disabled:bg-indigo-400 disabled:cursor-wait transition-all duration-200"
             >
               {isSaving ? t('addPatientModal.saving') : t('addPatientModal.submit')}
             </button>
@@ -196,16 +197,16 @@ export function AddPatientModal({ isOpen, onClose, onAddPatient }: AddPatientMod
             <CheckCircle className="h-6 w-6 text-green-600" />
         </div>
         <h3 className="text-lg leading-6 font-medium text-gray-900 mt-4">{t('addPatientModal.successHeader')}</h3>
-        <p className="text-sm text-slate-500 mt-2">{t('addPatientModal.successMessage')}</p>
+        <p className="text-sm text-zinc-500 mt-2">{t('addPatientModal.successMessage')}</p>
 
         <div className="my-6">
-            <p className="text-sm font-semibold text-slate-600">{t('addPatientModal.pairingCode')}</p>
+            <p className="text-sm font-semibold text-zinc-600">{t('addPatientModal.pairingCode')}</p>
             <div className="mt-2 flex items-center justify-center gap-2">
-                 <p className="text-3xl font-bold tracking-widest text-blue-600 bg-blue-50 px-4 py-2 rounded-lg border-2 border-dashed border-blue-200">
+                 <p className="text-3xl font-bold tracking-widest text-indigo-600 bg-indigo-50 px-4 py-2 rounded-lg border-2 border-dashed border-indigo-200">
                     {addedPatient?.code}
                 </p>
-                <button onClick={handleCopyCode} className="p-3 bg-slate-100 rounded-lg hover:bg-slate-200">
-                    <ClipboardCopy className="w-5 h-5 text-slate-600" />
+                <button onClick={handleCopyCode} className="p-3 bg-zinc-100 rounded-lg hover:bg-zinc-200">
+                    <ClipboardCopy className="w-5 h-5 text-zinc-600" />
                 </button>
             </div>
             {copied && <p className="text-xs text-green-600 mt-2 animate-fade-in">{t('addPatientModal.copied')}</p>}
@@ -215,14 +216,14 @@ export function AddPatientModal({ isOpen, onClose, onAddPatient }: AddPatientMod
              <button
               type="button"
               onClick={resetForm}
-              className="w-full px-4 py-2 text-sm font-semibold text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200"
+              className="w-full px-4 py-2 text-sm font-semibold text-indigo-700 bg-indigo-100 rounded-lg hover:bg-indigo-200"
             >
               {t('addPatientModal.addAnother')}
             </button>
             <button
               type="button"
               onClick={handleClose}
-              className="w-full px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+              className="w-full px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-lg hover:from-indigo-700 hover:to-indigo-800 transition-all duration-200"
             >
               {t('addPatientModal.done')}
             </button>
@@ -239,24 +240,24 @@ export function AddPatientModal({ isOpen, onClose, onAddPatient }: AddPatientMod
         onClick={handleClose}
     >
       <div 
-        className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6"
+        className="bg-gradient-to-br from-white to-zinc-50 rounded-2xl shadow-xl w-full max-w-md p-6"
         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
       >
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-100 p-2 rounded-full">
-              <User className="w-6 h-6 text-blue-600" />
+            <div className="bg-indigo-100 p-2 rounded-full">
+              <User className="w-6 h-6 text-indigo-600" />
             </div>
             <div>
-              <h2 id="modal-title" className="text-lg font-bold text-slate-800">
+              <h2 id="modal-title" className="text-lg font-bold text-zinc-800">
                 {addedPatient ? t('addPatientModal.successTitle', { name: addedPatient.name }) : t('addPatientModal.addTitle') }
               </h2>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-zinc-500">
                   {addedPatient ? t('addPatientModal.successSubtitle') : t('addPatientModal.addSubtitle')}
               </p>
             </div>
           </div>
-           <button onClick={handleClose} className="p-1 rounded-full text-slate-400 hover:bg-slate-200">
+           <button onClick={handleClose} className="p-1 rounded-full text-zinc-400 hover:bg-zinc-200">
                 <XCircle className="w-6 h-6" />
            </button>
         </div>

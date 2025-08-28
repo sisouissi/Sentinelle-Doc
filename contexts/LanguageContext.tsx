@@ -13,14 +13,14 @@ const fr = {
     dashboardLoadError: 'Impossible de rafraîchir les données du tableau de bord.',
     initialLoadError: 'Impossible de charger les données initiales.',
     connectionError: {
-      title: 'Erreur de Connexion',
-      instructions: 'Veuillez vérifier que vos identifiants Supabase sont correctement configurés dans `services/supabaseClient.ts` et que le service est accessible.'
+      title: 'Erreur',
+      instructions: 'Une erreur inattendue est survenue. Veuillez rafraîchir la page ou réessayer plus tard.'
     },
     header: {
       title: 'Tableau de Bord Médecin',
       subtitle: 'Surveillance des patients BPCO sévères'
     },
-    footer: '© 2025 Sentinelle : Application développée par Dr Zouhair Souissi. Tous droits réservés'
+    footer: '© 2025 Sentinelle : Application de simulation (Interface Médecin) développée par Dr Zouhair Souissi. Tous droits réservés'
   },
   riskScore: {
     score: 'Score : {{score}}',
@@ -206,7 +206,9 @@ const fr = {
       vitals: 'Signes Vitaux',
       observance: 'Observance',
       chat: 'Conversations',
-      environment: 'Environnement'
+      environment: 'Environnement',
+      speech: 'Élocution',
+      smoking: 'Sevrage Tabac'
     },
     hourlyActivity: 'Activité horaire (24h)',
     vitalsMonitoring: 'Suivi des signes vitaux (4h)'
@@ -270,6 +272,7 @@ const fr = {
   },
   prediction: {
     title: 'Analyse de la prédiction IA',
+    synthesisTitle: "Synthèse de l'IA",
     riskScore: 'Score de risque d\'exacerbation',
     confidence: 'Confiance : {{confidence}}%',
     factors: 'Principaux facteurs contributifs',
@@ -278,6 +281,14 @@ const fr = {
       high: 'élevé',
       medium: 'moyen',
       low: 'faible'
+    },
+    clickToAnalyze: {
+        title: "Analyse IA en attente",
+        description: "Cliquez pour lancer une analyse prédictive complète des données du patient.",
+        button: "Lancer l'Analyse"
+    },
+    errors: {
+      analysisFailed: "Échec de l'analyse"
     }
   },
   alertsTimeline: {
@@ -358,7 +369,13 @@ const fr = {
         High: 'Élevé',
         Medium: 'Moyen',
         Low: 'Faible'
-      }
+      },
+      analysisFailed: "Échec de l'analyse d'impact",
+      analyzeButton: "Analyser l'Impact Météo",
+      analyzing: "Analyse en cours...",
+      analyzeDescription: "Lancer une analyse IA pour évaluer l'impact des conditions actuelles sur le patient.",
+      launchAnalysis: "Lancer l'Analyse Environnementale",
+      launchDescription: "Charge les données météo et analyse leur impact potentiel sur le patient."
     }
   },
   medicationAdherence: {
@@ -370,7 +387,39 @@ const fr = {
     scheduled: 'Prévu',
     notApplicable: 'Non applicable',
     last7days: '7 derniers jours',
-    adherenceRate: 'Taux d\'observance'
+    adherenceRate: 'Taux d\'observance',
+    noData: 'Aucune médication programmée à suivre pour ce patient.'
+  },
+  speechAnalysis: {
+    title: "Analyse de l'élocution",
+    lastAnalysis: "Dernière analyse",
+    speechRate: "Débit de parole",
+    wpm: "mots/min",
+    pauseFrequency: "Fréquence des pauses",
+    perMin: "/min",
+    articulationScore: "Score d'articulation",
+    historicalTrend: "Tendance historique des marqueurs vocaux",
+    speechRateLabel: 'Débit (mots/min)',
+    pauseFreqLabel: 'Pauses (/min)',
+    articulationLabel: 'Articulation (%)',
+    noData: "Aucune donnée d'analyse vocale disponible."
+  },
+  smokingCessation: {
+    title: 'Suivi du Sevrage Tabagique',
+    smokedToday: "Cigarettes aujourd'hui",
+    cravingsToday: "Envies aujourd'hui",
+    smokeFreeDays: "Jours sans fumer",
+    nonSmoker: 'Non-fumeur',
+    nonSmokerMessage: 'Ce patient est déclaré non-fumeur ou a arrêté depuis longtemps.',
+    weeklyCigarettes: 'Cigarettes fumées (7 derniers jours)',
+    recentActivity: 'Activité récente du journal',
+    log: {
+        smoked: 'A fumé',
+        craving: 'Envie ressentie',
+        resisted: "A résisté à l'envie"
+    },
+    trigger: 'Déclencheur',
+    noLogs: 'Aucune activité enregistrée dans le journal.'
   }
 };
 
@@ -381,14 +430,14 @@ const en = {
     dashboardLoadError: 'Failed to refresh dashboard data.',
     initialLoadError: 'Failed to load initial data.',
     connectionError: {
-      title: 'Connection Error',
-      instructions: 'Please check that your Supabase credentials are correctly configured in `services/supabaseClient.ts` and that the service is accessible.'
+      title: 'Error',
+      instructions: 'An unexpected error occurred. Please refresh the page or try again later.'
     },
     header: {
       title: 'Doctor Dashboard',
       subtitle: 'Monitoring Severe COPD Patients'
     },
-    footer: '© 2025 Sentinel: Application developed by Dr Zouhair Souissi. All rights reserved'
+    footer: '© 2025 Sentinel: Simulation application (Doctor Interface) developed by Dr Zouhair Souissi. All rights reserved'
   },
   riskScore: {
     score: 'Score: {{score}}',
@@ -574,7 +623,9 @@ const en = {
       vitals: 'Vital Signs',
       observance: 'Adherence',
       chat: 'Conversations',
-      environment: 'Environment'
+      environment: 'Environment',
+      speech: 'Speech',
+      smoking: 'Smoking Cessation'
     },
     hourlyActivity: 'Hourly Activity (24h)',
     vitalsMonitoring: 'Vital Signs Monitoring (4h)'
@@ -638,6 +689,7 @@ const en = {
   },
   prediction: {
     title: 'AI Prediction Analysis',
+    synthesisTitle: "AI Synthesis",
     riskScore: 'Exacerbation Risk Score',
     confidence: 'Confidence: {{confidence}}%',
     factors: 'Main Contributing Factors',
@@ -646,6 +698,14 @@ const en = {
       high: 'high',
       medium: 'medium',
       low: 'low'
+    },
+    clickToAnalyze: {
+      title: "AI Analysis Pending",
+      description: "Click to run a full predictive analysis of the patient's data.",
+      button: "Run Analysis"
+    },
+    errors: {
+      analysisFailed: "Analysis Failed"
     }
   },
   alertsTimeline: {
@@ -726,7 +786,13 @@ const en = {
         High: 'High',
         Medium: 'Medium',
         Low: 'Low'
-      }
+      },
+      analysisFailed: 'Impact Analysis Failed',
+      analyzeButton: "Analyze Weather Impact",
+      analyzing: "Analyzing...",
+      analyzeDescription: "Run an AI analysis to assess the impact of current conditions on the patient.",
+      launchAnalysis: "Run Environmental Analysis",
+      launchDescription: "Loads weather data and analyzes its potential impact on the patient."
     }
   },
   medicationAdherence: {
@@ -738,7 +804,39 @@ const en = {
     scheduled: 'Scheduled',
     notApplicable: 'Not Applicable',
     last7days: 'Last 7 Days',
-    adherenceRate: 'Adherence Rate'
+    adherenceRate: 'Adherence Rate',
+    noData: 'No scheduled medications to track for this patient.'
+  },
+  speechAnalysis: {
+    title: 'Speech Analysis',
+    lastAnalysis: 'Last analysis',
+    speechRate: 'Speech Rate',
+    wpm: 'wpm',
+    pauseFrequency: 'Pause Frequency',
+    perMin: '/min',
+    articulationScore: 'Articulation Score',
+    historicalTrend: 'Historical Trend of Vocal Markers',
+    speechRateLabel: 'Rate (wpm)',
+    pauseFreqLabel: 'Pauses (/min)',
+    articulationLabel: 'Articulation (%)',
+    noData: 'No speech analysis data available.'
+  },
+  smokingCessation: {
+    title: 'Smoking Cessation Tracking',
+    smokedToday: 'Cigarettes Today',
+    cravingsToday: 'Cravings Today',
+    smokeFreeDays: 'Smoke-Free Days',
+    nonSmoker: 'Non-smoker',
+    nonSmokerMessage: 'This patient is reported as a non-smoker or has quit long ago.',
+    weeklyCigarettes: 'Cigarettes Smoked (Last 7 Days)',
+    recentActivity: 'Recent Journal Activity',
+    log: {
+        smoked: 'Smoked a cigarette',
+        craving: 'Felt a craving',
+        resisted: 'Resisted a craving'
+    },
+    trigger: 'Trigger',
+    noLogs: 'No journal activity logged.'
   }
 };
 
@@ -749,14 +847,14 @@ const ar = {
     dashboardLoadError: 'فشل تحديث بيانات لوحة المعلومات.',
     initialLoadError: 'فشل تحميل البيانات الأولية.',
     connectionError: {
-      title: 'خطأ في الاتصال',
-      instructions: 'يرجى التحقق من أن بيانات اعتماد Supabase الخاصة بك تم تكوينها بشكل صحيح في `services/supabaseClient.ts` وأن الخدمة يمكن الوصول إليها.'
+      title: 'خطأ',
+      instructions: 'حدث خطأ غير متوقع. يرجى تحديث الصفحة أو المحاولة مرة أخرى لاحقًا.'
     },
     header: {
       title: 'لوحة معلومات الطبيب',
       subtitle: 'مراقبة مرضى الانسداد الرئوي المزمن الشديد'
     },
-    footer: '© 2025 الرقيب: تطبيق تم تطويره بواسطة الدكتور زهير السويسي. كل الحقوق محفوظة.'
+    footer: '© 2025 الرقيب: تطبيق محاكاة (واجهة الطبيب) تم تطويره بواسطة الدكتور زهير السويسي. كل الحقوق محفوظة.'
   },
   riskScore: {
     score: 'النتيجة: {{score}}',
@@ -942,7 +1040,9 @@ const ar = {
       vitals: 'العلامات الحيوية',
       observance: 'الالتزام',
       chat: 'المحادثات',
-      environment: 'البيئة'
+      environment: 'البيئة',
+      speech: 'الكلام',
+      smoking: 'الإقلاع عن التدخين'
     },
     hourlyActivity: 'النشاط الساعي (24 ساعة)',
     vitalsMonitoring: 'مراقبة العلامات الحيوية (4 ساعات)'
@@ -1006,6 +1106,7 @@ const ar = {
   },
   prediction: {
     title: 'تحليل تنبؤات الذكاء الاصطناعي',
+    synthesisTitle: "ملخص الذكاء الاصطناعي",
     riskScore: 'درجة خطر التفاقم',
     confidence: 'الثقة: {{confidence}}%',
     factors: 'العوامل الرئيسية المساهمة',
@@ -1014,6 +1115,14 @@ const ar = {
       high: 'مرتفع',
       medium: 'متوسط',
       low: 'منخفض'
+    },
+    clickToAnalyze: {
+      title: "تحليل الذكاء الاصطناعي معلق",
+      description: "انقر لتشغيل تحليل تنبؤي كامل لبيانات المريض.",
+      button: "تشغيل التحليل"
+    },
+    errors: {
+      analysisFailed: "فشل التحليل"
     }
   },
   alertsTimeline: {
@@ -1094,7 +1203,13 @@ const ar = {
         High: 'مرتفع',
         Medium: 'متوسط',
         Low: 'منخفض'
-      }
+      },
+      analysisFailed: 'فشل تحليل التأثير',
+      analyzeButton: "تحليل تأثير الطقس",
+      analyzing: "جاري التحليل...",
+      analyzeDescription: "قم بتشغيل تحليل الذكاء الاصطناعي لتقييم تأثير الظروف الحالية على المريض.",
+      launchAnalysis: "بدء التحليل البيئي",
+      launchDescription: "تحميل بيانات الطقس وتحليل تأثيرها المحتمل على المريض."
     }
   },
   medicationAdherence: {
@@ -1106,7 +1221,39 @@ const ar = {
     scheduled: 'مجدول',
     notApplicable: 'لا ينطبق',
     last7days: 'آخر 7 أيام',
-    adherenceRate: 'معدل الالتزام'
+    adherenceRate: 'معدل الالتزام',
+    noData: 'لا توجد أدوية مجدولة لتتبعها لهذا المريض.'
+  },
+  speechAnalysis: {
+    title: 'تحليل الكلام',
+    lastAnalysis: 'آخر تحليل',
+    speechRate: 'سرعة الكلام',
+    wpm: 'كلمة/د',
+    pauseFrequency: 'تكرار الوقفات',
+    perMin: '/د',
+    articulationScore: 'درجة النطق',
+    historicalTrend: 'الاتجاه التاريخي للمؤشرات الصوتية',
+    speechRateLabel: 'السرعة (كلمة/د)',
+    pauseFreqLabel: 'الوقفات (/د)',
+    articulationLabel: 'النطق (٪)',
+    noData: 'لا توجد بيانات تحليل صوتي متاحة.'
+  },
+  smokingCessation: {
+    title: 'متابعة الإقلاع عن التدخين',
+    smokedToday: 'سجائر اليوم',
+    cravingsToday: 'الرغبات اليوم',
+    smokeFreeDays: 'أيام بلا تدخين',
+    nonSmoker: 'غير مدخن',
+    nonSmokerMessage: 'تم الإبلاغ عن هذا المريض كغير مدخن أو أقلع منذ فترة طويلة.',
+    weeklyCigarettes: 'السجائر المدخنة (آخر 7 أيام)',
+    recentActivity: 'نشاط اليوميات الأخير',
+    log: {
+        smoked: 'دخن سيجارة',
+        craving: 'شعر برغبة',
+        resisted: 'قاوم الرغبة'
+    },
+    trigger: 'المحفز',
+    noLogs: 'لم يتم تسجيل أي نشاط في اليوميات.'
   }
 };
 
@@ -1121,7 +1268,7 @@ type LanguageContextType = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguage] = useState<Language>('ar');
+  const [language, setLanguage] = useState<Language>('fr');
 
   useEffect(() => {
     document.documentElement.lang = language;

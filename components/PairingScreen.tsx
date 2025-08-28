@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { getPatientByCode } from '../services/supabaseService';
 import type { PatientData } from '../types';
@@ -38,18 +39,18 @@ export function PairingScreen({ onPairSuccess }: PairingScreenProps): React.Reac
   };
 
   return (
-    <div className="flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-sm animate-fade-in">
+    <div className="flex flex-col items-center justify-center bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 animate-fade-in transition-shadow duration-300 hover:shadow-xl">
         <div className="text-center">
-            <div className="bg-blue-600 inline-block p-4 rounded-full text-white mb-4">
+            <div className="bg-indigo-600 inline-block p-4 rounded-full text-white mb-4">
               <HeartPulse className="w-10 h-10"/>
             </div>
-            <h2 className="text-2xl font-bold text-slate-800">{t('pairing.welcome')}</h2>
-            <p className="mt-2 text-slate-600">{t('pairing.instructions')}</p>
+            <h2 className="text-2xl font-bold text-zinc-800">{t('pairing.welcome')}</h2>
+            <p className="mt-2 text-zinc-600">{t('pairing.instructions')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-8 w-full max-w-sm">
             <div>
-                <label htmlFor="pairing-code" className="block text-sm font-medium text-slate-700">
+                <label htmlFor="pairing-code" className="block text-sm font-medium text-zinc-700">
                     {t('pairing.label')}
                 </label>
                 <div className="mt-1 relative rounded-md shadow-sm">
@@ -60,7 +61,7 @@ export function PairingScreen({ onPairSuccess }: PairingScreenProps): React.Reac
                         type="text"
                         name="pairing-code"
                         id="pairing-code"
-                        className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 rtl:pl-4 rtl:pr-10 sm:text-lg border-gray-300 rounded-md py-3 uppercase"
+                        className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 rtl:pl-4 rtl:pr-10 sm:text-lg border-gray-300 rounded-md py-3 uppercase"
                         placeholder={t('pairing.placeholder')}
                         value={code}
                         onChange={(e) => setCode(e.target.value)}
@@ -81,7 +82,7 @@ export function PairingScreen({ onPairSuccess }: PairingScreenProps): React.Reac
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-400 disabled:cursor-wait"
+                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400 disabled:cursor-wait transition-all duration-200"
                 >
                 {isLoading ? (
                     <>

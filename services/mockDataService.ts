@@ -1,5 +1,4 @@
-
-import type { PatientData, Measurement, RiskLevel, AlertData, SmartphoneData, MedicationLog } from '../types';
+import type { PatientData, Measurement, RiskLevel, AlertData, SmartphoneData, MedicationLog, NewPatient, SpeechData, SmokingCessationLog } from '../types';
 import type { TFunction } from '../contexts/LanguageContext';
 
 function createMeasurements(baseSpo2: number, baseHeartRate: number, trend: 'stable' | 'down' | 'up'): Measurement[] {
@@ -37,12 +36,35 @@ function createMeasurements(baseSpo2: number, baseHeartRate: number, trend: 'sta
   return measurements;
 }
 
+const highRiskSpeechData: SpeechData = {
+    speechRateWPM: 95,
+    pauseFrequencyPerMin: 8,
+    articulationScore: 78,
+    lastAnalysisTimestamp: new Date().toISOString()
+};
+
+const stableSpeechData: SpeechData = {
+    speechRateWPM: 130,
+    pauseFrequencyPerMin: 3,
+    articulationScore: 92,
+    lastAnalysisTimestamp: new Date().toISOString()
+};
+
+const recoveringSpeechData: SpeechData = {
+    speechRateWPM: 145,
+    pauseFrequencyPerMin: 2,
+    articulationScore: 96,
+    lastAnalysisTimestamp: new Date().toISOString()
+};
+
+
 const highRiskSmartphoneData: SmartphoneData = {
     activity: { steps: 1200, distanceKm: 0.8, activeMinutes: 15, sedentaryMinutes: 450, floorsClimbed: 1, movementSpeedKmh: 1.8 },
     sleep: { totalSleepHours: 4.8, sleepEfficiency: 65, awakeMinutes: 90, remSleepMinutes: 40, deepSleepMinutes: 30, sleepPosition: "sitting", nightMovements: 45 },
     cough: { coughFrequencyPerHour: 12, coughIntensityDb: 75, nightCoughEpisodes: 8, coughPattern: "wheezing", respiratoryRate: 24 },
     environment: { homeTimePercent: 95, travelRadiusKm: 0.5, airQualityIndex: 110, weather: { temperatureC: 3, humidityPercent: 85 } },
-    reported: { symptoms: { breathlessness: 8, cough: 7, fatigue: 9 }, medication: { adherencePercent: 75, missedDoses: 2 }, qualityOfLife: { CAT: 32 } },
+    reported: { symptoms: { breathlessness: 8, cough: 7, fatigue: 9 }, medication: { adherencePercent: 75, missedDoses: 2 }, qualityOfLife: { CAT: 32 }, smoking: { cigarettesSmokedToday: 5, cravingsToday: 8, daysSmokeFree: 0 } },
+    speech: highRiskSpeechData
 };
 
 const stableSmartphoneData: SmartphoneData = {
@@ -50,7 +72,8 @@ const stableSmartphoneData: SmartphoneData = {
     sleep: { totalSleepHours: 6.1, sleepEfficiency: 82, awakeMinutes: 40, remSleepMinutes: 70, deepSleepMinutes: 60, sleepPosition: "lateral", nightMovements: 20 },
     cough: { coughFrequencyPerHour: 3, coughIntensityDb: 60, nightCoughEpisodes: 2, coughPattern: "dry", respiratoryRate: 18 },
     environment: { homeTimePercent: 70, travelRadiusKm: 1.1, airQualityIndex: 45, weather: { temperatureC: 18, humidityPercent: 60 } },
-    reported: { symptoms: { breathlessness: 4, cough: 3, fatigue: 4 }, medication: { adherencePercent: 95, missedDoses: 0 }, qualityOfLife: { CAT: 18 } },
+    reported: { symptoms: { breathlessness: 4, cough: 3, fatigue: 4 }, medication: { adherencePercent: 95, missedDoses: 0 }, qualityOfLife: { CAT: 18 }, smoking: { cigarettesSmokedToday: 0, cravingsToday: 2, daysSmokeFree: 12 } },
+    speech: stableSpeechData
 };
 
 const recoveringSmartphoneData: SmartphoneData = {
@@ -58,7 +81,8 @@ const recoveringSmartphoneData: SmartphoneData = {
     sleep: { totalSleepHours: 7.5, sleepEfficiency: 90, awakeMinutes: 25, remSleepMinutes: 90, deepSleepMinutes: 80, sleepPosition: "lateral", nightMovements: 12 },
     cough: { coughFrequencyPerHour: 1, coughIntensityDb: 55, nightCoughEpisodes: 0, coughPattern: "dry", respiratoryRate: 16 },
     environment: { homeTimePercent: 50, travelRadiusKm: 2.0, airQualityIndex: 30, weather: { temperatureC: 22, humidityPercent: 55 } },
-    reported: { symptoms: { breathlessness: 2, cough: 1, fatigue: 2 }, medication: { adherencePercent: 100, missedDoses: 0 }, qualityOfLife: { CAT: 12 } },
+    reported: { symptoms: { breathlessness: 2, cough: 1, fatigue: 2 }, medication: { adherencePercent: 100, missedDoses: 0 }, qualityOfLife: { CAT: 12 }, smoking: { cigarettesSmokedToday: 0, cravingsToday: 0, daysSmokeFree: 380 } },
+    speech: recoveringSpeechData
 };
 
 export function getDefaultSmartphoneData(): SmartphoneData {
@@ -67,12 +91,13 @@ export function getDefaultSmartphoneData(): SmartphoneData {
     sleep: { totalSleepHours: 0, sleepEfficiency: 0, awakeMinutes: 0, remSleepMinutes: 0, deepSleepMinutes: 0, sleepPosition: "lateral", nightMovements: 0 },
     cough: { coughFrequencyPerHour: 0, coughIntensityDb: 0, nightCoughEpisodes: 0, coughPattern: "dry", respiratoryRate: 16 },
     environment: { homeTimePercent: 0, travelRadiusKm: 0, airQualityIndex: 50, weather: { temperatureC: 20, humidityPercent: 50 } },
-    reported: { symptoms: { breathlessness: 0, cough: 0, fatigue: 0 }, medication: { adherencePercent: 100, missedDoses: 0 }, qualityOfLife: { CAT: 0 } },
+    reported: { symptoms: { breathlessness: 0, cough: 0, fatigue: 0 }, medication: { adherencePercent: 100, missedDoses: 0 }, qualityOfLife: { CAT: 0 }, smoking: { cigarettesSmokedToday: 0, cravingsToday: 0, daysSmokeFree: 0 } },
+    speech: { speechRateWPM: 0, pauseFrequencyPerMin: 0, articulationScore: 0, lastAnalysisTimestamp: new Date().toISOString() },
   };
 }
 
 
-const allPatientsRaw: Omit<PatientData, 'medication_logs'>[] = [
+const allPatientsRaw: Omit<PatientData, 'medication_logs' | 'smoking_cessation_logs'>[] = [
     {
         id: 1,
         name: 'Jean Dupont',
@@ -89,6 +114,7 @@ const allPatientsRaw: Omit<PatientData, 'medication_logs'>[] = [
             { id: 2, patient_id: 1, is_active: true, name: 'Symbicort', dosage: '2 bouffées', schedules: [{ id: 2, medication_id: 2, time_of_day: 'Matin (09:00)' }, { id: 3, medication_id: 2, time_of_day: 'Soir (21:00)' }] },
             { id: 3, patient_id: 1, is_active: true, name: 'Ventoline (si besoin)', dosage: '1-2 bouffées', schedules: [{ id: 4, medication_id: 3, time_of_day: 'Au besoin' }] },
         ],
+        code: 'ABC-123',
     },
     {
         id: 2,
@@ -105,6 +131,7 @@ const allPatientsRaw: Omit<PatientData, 'medication_logs'>[] = [
             { id: 4, patient_id: 2, is_active: true, name: 'Furosemide', dosage: '40mg', schedules: [{ id: 5, medication_id: 4, time_of_day: 'Matin (08:00)' }] },
             { id: 5, patient_id: 2, is_active: true, name: 'Enalapril', dosage: '10mg', schedules: [{ id: 6, medication_id: 5, time_of_day: 'Matin (08:00)' }] },
         ],
+        code: 'DEF-456',
     },
     {
         id: 3,
@@ -119,6 +146,7 @@ const allPatientsRaw: Omit<PatientData, 'medication_logs'>[] = [
              { id: 6, patient_id: 3, is_active: true, name: 'Prednisone', dosage: '20mg (dégressif)', schedules: [{ id: 7, medication_id: 6, time_of_day: 'Matin' }] },
              { id: 7, patient_id: 3, is_active: true, name: 'Amoxicilline', dosage: '1g', schedules: [{ id: 8, medication_id: 7, time_of_day: 'Matin' }, { id: 9, medication_id: 7, time_of_day: 'Soir' }] },
         ],
+        code: 'GHI-789',
     },
     {
         id: 4,
@@ -128,10 +156,11 @@ const allPatientsRaw: Omit<PatientData, 'medication_logs'>[] = [
         city: 'Lille',
         country: 'FR',
         measurements: createMeasurements(93, 88, 'down'),
-        smartphone: { ...stableSmartphoneData, activity: { ...stableSmartphoneData.activity, steps: 2100 }, environment: {...stableSmartphoneData.environment, airQualityIndex: 90} },
+        smartphone: { ...stableSmartphoneData, speech: stableSpeechData, activity: { ...stableSmartphoneData.activity, steps: 2100 }, environment: {...stableSmartphoneData.environment, airQualityIndex: 90} },
         emergency_contact_name: 'Hélène Bernard',
         emergency_contact_phone: '07 00 11 22 33',
         medications: [],
+        code: 'JKL-101',
     },
     {
         id: 5,
@@ -141,12 +170,13 @@ const allPatientsRaw: Omit<PatientData, 'medication_logs'>[] = [
         city: 'Bordeaux',
         country: 'FR',
         measurements: createMeasurements(98, 72, 'stable'),
-        smartphone: { ...recoveringSmartphoneData, activity: { ...recoveringSmartphoneData.activity, steps: 6200 } },
+        smartphone: { ...recoveringSmartphoneData, speech: recoveringSpeechData, activity: { ...recoveringSmartphoneData.activity, steps: 6200 } },
         medications: [],
+        code: 'MNO-212',
     }
 ];
 
-function generateMockLogs(patient: Omit<PatientData, 'medication_logs'>): MedicationLog[] {
+function generateMockLogs(patient: Omit<PatientData, 'medication_logs' | 'smoking_cessation_logs'>): MedicationLog[] {
     const logs: MedicationLog[] = [];
     const today = new Date();
     
@@ -172,13 +202,15 @@ function generateMockLogs(patient: Omit<PatientData, 'medication_logs'>): Medica
                     const timeMatch = schedule.time_of_day.match(/(\d{2}:\d{2})/);
                     const hour = timeMatch ? parseInt(timeMatch[1].split(':')[0]) : 9;
                     const minute = timeMatch ? parseInt(timeMatch[1].split(':')[1]) : 0;
-                    date.setHours(hour, minute, 0, 0);
+                    
+                    const takenDate = new Date(date);
+                    takenDate.setHours(hour, minute, 0, 0);
 
                     logs.push({
                         id: logs.length + 1,
                         schedule_id: schedule.id,
                         patient_id: patient.id,
-                        taken_at: date.toISOString(),
+                        taken_at: takenDate.toISOString(),
                     });
                 }
             });
@@ -187,12 +219,70 @@ function generateMockLogs(patient: Omit<PatientData, 'medication_logs'>): Medica
     return logs;
 }
 
+function generateMockSmokingLogs(patientId: number): SmokingCessationLog[] {
+    const logs: SmokingCessationLog[] = [];
+    const now = new Date();
+    const triggers = ['Stress', 'Café', 'Après le repas', 'Social'];
 
-const allPatients: PatientData[] = allPatientsRaw.map(p => ({
+    if (patientId === 1) { // Jean Dupont, active smoker
+        for (let i = 0; i < 7; i++) {
+            const day = new Date(now);
+            day.setDate(now.getDate() - i);
+            const dailySmoked = 3 + Math.floor(Math.random() * 5); // 3-7 cigarettes
+            for (let j = 0; j < dailySmoked; j++) {
+                 logs.push({
+                    id: logs.length + 1,
+                    patient_id: patientId,
+                    timestamp: new Date(day.getTime() - j * 2 * 3600 * 1000).toISOString(),
+                    type: 'smoked',
+                    trigger: triggers[Math.floor(Math.random() * triggers.length)]
+                });
+            }
+        }
+    } else if (patientId === 2) { // Marie Lambert, trying to quit
+        for (let i = 0; i < 14; i++) { // Logs over 14 days
+             const day = new Date(now);
+             day.setDate(now.getDate() - i);
+             if (i > 11) { // Smoked before 12 days ago
+                logs.push({ id: logs.length + 1, patient_id: patientId, timestamp: day.toISOString(), type: 'smoked' });
+             } else { // Cravings and resisted since then
+                if (Math.random() > 0.6) {
+                    logs.push({ id: logs.length + 1, patient_id: patientId, timestamp: day.toISOString(), type: 'craving', trigger: 'Stress' });
+                    logs.push({ id: logs.length + 1, patient_id: patientId, timestamp: new Date(day.getTime() + 600000).toISOString(), type: 'resisted' });
+                }
+             }
+        }
+    }
+    return logs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+}
+
+
+
+let allPatients: PatientData[] = allPatientsRaw.map(p => ({
     ...p,
-    medication_logs: generateMockLogs(p)
+    medication_logs: generateMockLogs(p),
+    smoking_cessation_logs: generateMockSmokingLogs(p.id)
 }));
 
+export function addMockPatient(newPatient: NewPatient): PatientData {
+    const nextId = allPatients.length > 0 ? Math.max(...allPatients.map(p => p.id)) + 1 : 1;
+    const chars = 'ABCDEFGHIJKLMNPQRSTUVWXYZ123456789';
+    const code = `${Array.from({ length: 3 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('')}-${Array.from({ length: 3 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('')}`;
+
+    const addedPatient: PatientData = {
+        id: nextId,
+        ...newPatient,
+        measurements: [],
+        smartphone: getDefaultSmartphoneData(),
+        medications: [],
+        medication_logs: [],
+        smoking_cessation_logs: [],
+        code: code,
+    };
+
+    allPatients.push(addedPatient);
+    return addedPatient;
+}
 
 export function getInitialData(): PatientData {
   return allPatients[0];

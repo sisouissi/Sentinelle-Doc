@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { SleepData } from '../types';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
@@ -9,12 +10,12 @@ interface SleepDetailsCardProps {
 }
 
 const StatCard = ({ label, value, unit, icon }: { label: string, value: string | number, unit: string, icon: React.ReactNode }) => (
-    <div className="p-3 rounded-lg flex items-center gap-3 bg-slate-100/70">
-        <div className="flex-shrink-0 text-slate-500">{icon}</div>
+    <div className="p-3 rounded-lg flex items-center gap-3 bg-zinc-100/70 transition-transform duration-200 hover:scale-105 hover:shadow-sm">
+        <div className="flex-shrink-0 text-zinc-500">{icon}</div>
         <div>
-            <p className="text-xs text-slate-500">{label}</p>
-            <p className="text-base font-bold text-slate-800">
-                {value} <span className="text-sm font-normal text-slate-600">{unit}</span>
+            <p className="text-xs text-zinc-500">{label}</p>
+            <p className="text-base font-bold text-zinc-800">
+                {value} <span className="text-sm font-normal text-zinc-600">{unit}</span>
             </p>
         </div>
     </div>
@@ -61,20 +62,22 @@ export function SleepDetailsCard({ data }: SleepDetailsCardProps): React.ReactNo
 
   return (
     <div>
-        <h3 className="text-md font-semibold text-slate-700 mb-3 flex items-center gap-2">
-            <BedDouble className="w-5 h-5 text-blue-600"/>
+        <h3 className="text-md font-semibold text-zinc-700 mb-3 flex items-center gap-2">
+            <BedDouble className="w-5 h-5 text-indigo-600"/>
             {t('sleepDetails.title')}
         </h3>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+        <div className="grid grid-cols-2 gap-3 mb-4">
             <StatCard label={t('sleepDetails.totalSleep')} value={data.totalSleepHours.toFixed(1)} unit={t('units.h')} icon={<BedDouble className="w-5 h-5" />} />
+            {/* FIX: Corrected property 'efficiency' to 'sleepEfficiency' to match the SleepData type. */}
             <StatCard label={t('sleepDetails.efficiency')} value={data.sleepEfficiency} unit="%" icon={<BarChartIcon className="w-5 h-5" />} />
+            {/* FIX: Corrected property 'movements' to 'nightMovements' to match the SleepData type. */}
             <StatCard label={t('sleepDetails.movements')} value={data.nightMovements} unit={t('units.times')} icon={<Wind className="w-5 h-5" />} />
             <StatCard label={t('sleepDetails.position')} value={translatePosition(data.sleepPosition)} unit="" icon={<PersonStanding className="w-5 h-5" />} />
         </div>
         
         <div>
-            <h4 className="text-sm font-semibold text-slate-600 mb-2">{t('sleepDetails.compositionTitle')}</h4>
+            <h4 className="text-sm font-semibold text-zinc-600 mb-2">{t('sleepDetails.compositionTitle')}</h4>
             <div className="h-24 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart
@@ -89,7 +92,7 @@ export function SleepDetailsCard({ data }: SleepDetailsCardProps): React.ReactNo
                              contentStyle={{
                                 backgroundColor: 'rgba(255, 255, 255, 0.9)',
                                 backdropFilter: 'blur(4px)',
-                                border: '1px solid #e2e8f0',
+                                border: '1px solid #e5e7eb',
                                 borderRadius: '0.75rem',
                             }}
                             cursor={{fill: 'transparent'}}

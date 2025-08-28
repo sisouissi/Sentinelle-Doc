@@ -68,6 +68,14 @@ export interface EnvironmentData {
   };
 }
 
+export interface SpeechData {
+  speechRateWPM: number;
+  pauseFrequencyPerMin: number;
+  articulationScore: number; // 0-100
+  lastAnalysisTimestamp: string; // ISO string
+}
+
+
 export interface PatientReportedData {
   symptoms: {
     breathlessness: number; // 1-10
@@ -81,6 +89,11 @@ export interface PatientReportedData {
   qualityOfLife: {
     CAT: number; // 0-40
   };
+  smoking: {
+    cigarettesSmokedToday: number;
+    cravingsToday: number;
+    daysSmokeFree: number;
+  };
 }
 
 // Main SmartphoneData type now contains all the detailed sub-interfaces
@@ -90,6 +103,17 @@ export interface SmartphoneData {
   cough: CoughData;
   environment: EnvironmentData;
   reported: PatientReportedData;
+  speech: SpeechData;
+}
+
+export type SmokingCessationLogType = 'craving' | 'smoked' | 'resisted';
+
+export interface SmokingCessationLog {
+    id: number;
+    patient_id: number;
+    timestamp: string; // ISO string
+    type: SmokingCessationLogType;
+    trigger?: string; // e.g., "Stress", "Coffee"
 }
 
 
@@ -104,6 +128,7 @@ export interface PatientData {
   smartphone: SmartphoneData;
   medications: Medication[];
   medication_logs: MedicationLog[];
+  smoking_cessation_logs: SmokingCessationLog[];
   emergency_contact_name?: string;
   emergency_contact_phone?: string;
   smartphone_data?: any; // Raw data from Supabase before transformation
@@ -253,12 +278,14 @@ export interface CompletePrediction {
   riskScore: number; // 0-100
   confidence: number; // 0-100
   timeHorizon: number; // hours
+  summary: string;
   contributingFactors: FactorAnalysis[];
   alerts: AnomalyAlert[];
   recommendations: string[];
   lastUpdate: string;
   activityData: { time: string; steps: number; activeMinutes: number }[];
   heatmapData: HeatmapDataPoint[];
+  error?: string;
 }
 
 // --- Environment Tab Types ---
@@ -276,4 +303,5 @@ export interface WeatherData {
 export interface WeatherImpactAnalysis {
     impactLevel: 'Low' | 'Medium' | 'High';
     summary: string;
+    error?: string;
 }

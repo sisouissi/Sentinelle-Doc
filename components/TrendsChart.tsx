@@ -80,15 +80,15 @@ export function TrendsChart({ measurements }: TrendsChartProps): React.ReactNode
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart data={dataWithTrend} margin={{ top: 5, right: 30, left: 10, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-        <XAxis dataKey="time" stroke="#9ca3af" fontSize={12} />
-        <YAxis yAxisId="left" stroke="#3b82f6" domain={[85, 100]} fontSize={12} label={{ value: t('trendsChart.ySpo2'), angle: -90, position: 'insideLeft', offset: 0, style: {fontSize: '12px', fill: '#3b82f6'}}} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+        <XAxis dataKey="time" stroke="#71717a" fontSize={12} />
+        <YAxis yAxisId="left" stroke="#4f46e5" domain={[85, 100]} fontSize={12} label={{ value: t('trendsChart.ySpo2'), angle: -90, position: 'insideLeft', offset: 0, style: {fontSize: '12px', fill: '#4f46e5'}}} />
         <YAxis yAxisId="right" orientation="right" stroke="#ef4444" domain={[50, 120]} fontSize={12} label={{ value: t('trendsChart.yHr'), angle: 90, position: 'insideRight', offset: 0, style: {fontSize: '12px', fill: '#ef4444'}}}/>
         <Tooltip
             contentStyle={{
-                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
                 backdropFilter: 'blur(4px)',
-                border: '1px solid #e2e8f0',
+                border: '1px solid #e5e7eb',
                 borderRadius: '0.75rem',
                 boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
             }}
@@ -96,7 +96,7 @@ export function TrendsChart({ measurements }: TrendsChartProps): React.ReactNode
         />
         <Legend wrapperStyle={{fontSize: "12px"}}/>
         {/* Actual Data Lines */}
-        <Line yAxisId="left" type="monotone" dataKey="SpO2" name={t('trendsChart.spo2')} stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 8 }} />
+        <Line yAxisId="left" type="monotone" dataKey="SpO2" name={t('trendsChart.spo2')} stroke="#4f46e5" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 8 }} />
         <Line yAxisId="right" type="monotone" dataKey="heartRate" name={t('trendsChart.heartRate')} stroke="#ef4444" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 8 }} />
         
         {/* Trend Lines */}
@@ -106,7 +106,7 @@ export function TrendsChart({ measurements }: TrendsChartProps): React.ReactNode
             type="linear"
             dataKey={t('trendsChart.spo2Trend')}
             name={t('trendsChart.spo2Trend')}
-            stroke="#60a5fa"
+            stroke="#818cf8"
             strokeWidth={2}
             strokeDasharray="5 5"
             dot={false}

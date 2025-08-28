@@ -14,19 +14,19 @@ interface DeviceManagerProps {
 const deviceManager = DeviceManagerService.getInstance();
 
 const StatCard = ({ title, value, icon, valueColor }: {title: string, value: string | number, icon: React.ReactNode, valueColor?: string}) => (
-    <div className="bg-slate-100/80 backdrop-blur-sm p-3 rounded-xl col-span-1">
+    <div className="bg-zinc-100/80 p-3 rounded-xl col-span-1">
         <div className="flex items-center justify-between pb-1">
-            <h3 className="text-xs font-medium text-slate-500">{title}</h3>
+            <h3 className="text-xs font-medium text-zinc-500">{title}</h3>
             {icon}
         </div>
         <div>
-            <p className={`text-xl font-bold ${valueColor || 'text-slate-800'}`}>{value}</p>
+            <p className={`text-xl font-bold ${valueColor || 'text-zinc-800'}`}>{value}</p>
         </div>
     </div>
 );
 
 const TabButton = ({ isActive, onClick, children }: { isActive: boolean, onClick: () => void, children: React.ReactNode }) => (
-    <button onClick={onClick} className={`px-4 py-2 w-full text-sm font-semibold rounded-lg ${isActive ? 'bg-white shadow text-blue-600' : 'text-slate-600 hover:bg-white/80'}`}>
+    <button onClick={onClick} className={`px-4 py-2 w-full text-sm font-semibold rounded-lg ${isActive ? 'bg-white shadow text-indigo-600' : 'text-zinc-600 hover:bg-white/80'}`}>
         {children}
     </button>
 );
@@ -36,28 +36,28 @@ const DeviceIcon = ({ type }: { type: DeviceType }) => {
     if (type === 'wearable') return <Watch className={`${commonClasses} text-green-500`} />;
     if (type === 'smartphone') return <Smartphone className={`${commonClasses} text-blue-500`} />;
     if (type === 'oximeter') return <HeartPulse className={`${commonClasses} text-red-500`} />;
-    return <Bluetooth className={`${commonClasses} text-slate-500`} />;
+    return <Bluetooth className={`${commonClasses} text-zinc-500`} />;
 };
 
 const DeviceCard = ({ device, onConnect, onDisconnect, isConnecting, t }: { device: DeviceInfo, onConnect: (id: string) => void, onDisconnect: (id: string) => void, isConnecting: boolean, t: (key: string) => string }) => (
-    <div className={`p-4 rounded-xl transition-all ${device.isConnected ? 'bg-green-50 border-green-200 border' : 'bg-slate-100'}`}>
+    <div className={`p-4 rounded-xl transition-all duration-300 ease-in-out hover:shadow-md hover:scale-[1.02] ${device.isConnected ? 'bg-green-50 border-green-200 border' : 'bg-zinc-100'}`}>
         <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
                 <DeviceIcon type={device.type} />
                 <div>
-                    <p className="font-semibold text-slate-800">{device.name}</p>
-                    <p className="text-xs text-slate-500">{device.model}</p>
+                    <p className="font-semibold text-zinc-800">{device.name}</p>
+                    <p className="text-xs text-zinc-500">{device.model}</p>
                 </div>
             </div>
             {device.isConnected ? 
                 <span className="flex items-center text-xs font-semibold text-green-600 bg-green-200 px-2 py-1 rounded-full"><CheckCircle className="w-3 h-3 mr-1"/> {t('deviceManager.active')}</span> : 
-                <span className="flex items-center text-xs font-semibold text-slate-600 bg-slate-200 px-2 py-1 rounded-full"><XCircle className="w-3 h-3 mr-1"/> {t('deviceManager.inactive')}</span>
+                <span className="flex items-center text-xs font-semibold text-zinc-600 bg-zinc-200 px-2 py-1 rounded-full"><XCircle className="w-3 h-3 mr-1"/> {t('deviceManager.inactive')}</span>
             }
         </div>
         {device.batteryLevel !== undefined && (
-            <div className="flex items-center gap-2 text-xs text-slate-500 mb-4">
+            <div className="flex items-center gap-2 text-xs text-zinc-500 mb-4">
                 <Battery className="w-4 h-4" />
-                <div className="w-full bg-slate-200 rounded-full h-1.5">
+                <div className="w-full bg-zinc-200 rounded-full h-1.5">
                     <div className="bg-green-500 h-1.5 rounded-full" style={{width: `${device.batteryLevel}%`}}></div>
                 </div>
                 <span>{device.batteryLevel}%</span>
@@ -65,11 +65,11 @@ const DeviceCard = ({ device, onConnect, onDisconnect, isConnecting, t }: { devi
         )}
         <div className="flex">
             {device.isConnected ? (
-                 <button onClick={() => onDisconnect(device.id)} disabled={isConnecting} className="w-full px-4 py-1.5 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:bg-slate-400">
+                 <button onClick={() => onDisconnect(device.id)} disabled={isConnecting} className="w-full px-4 py-1.5 text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-red-600 rounded-lg hover:from-red-600 hover:to-red-700 disabled:bg-zinc-400 transition-all duration-200">
                     {t('deviceManager.disconnect')}
                 </button>
             ) : (
-                <button onClick={() => onConnect(device.id)} disabled={isConnecting} className="w-full px-4 py-1.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:bg-slate-400">
+                <button onClick={() => onConnect(device.id)} disabled={isConnecting} className="w-full px-4 py-1.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-lg hover:from-indigo-700 hover:to-indigo-800 disabled:bg-zinc-400 transition-all duration-200">
                     {isConnecting ? t('deviceManager.connecting') : t('deviceManager.connect')}
                 </button>
             )}
@@ -80,7 +80,7 @@ const DeviceCard = ({ device, onConnect, onDisconnect, isConnecting, t }: { devi
 const LiveReadingDisplay = ({ reading, t }: { reading: DeviceReading | null, t: (key: string) => string }) => {
     if (!reading) {
         return (
-            <div className="flex flex-col items-center justify-center h-48 text-center text-slate-500 bg-slate-100 rounded-xl">
+            <div className="flex flex-col items-center justify-center h-48 text-center text-zinc-500 bg-zinc-100 rounded-xl">
                 <Activity className="w-10 h-10 mb-2 opacity-50" />
                 <p className="font-semibold">{t('deviceManager.waitingForData')}</p>
                 <p className="text-sm">{t('deviceManager.connectDevicePrompt')}</p>
@@ -88,22 +88,22 @@ const LiveReadingDisplay = ({ reading, t }: { reading: DeviceReading | null, t: 
         );
     }
     return (
-        <div className="bg-slate-100 p-4 rounded-xl animate-fade-in">
+        <div className="bg-zinc-100 p-4 rounded-xl animate-fade-in">
              <div className="flex justify-between items-baseline mb-4">
-                <h4 className="font-semibold text-slate-700">{t('deviceManager.liveMeasurement')}</h4>
-                <p className="text-xs text-slate-500">{t('deviceManager.quality')}: {reading.quality}%</p>
+                <h4 className="font-semibold text-zinc-700">{t('deviceManager.liveMeasurement')}</h4>
+                <p className="text-xs text-zinc-500">{t('deviceManager.quality')}: {reading.quality}%</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
                 {reading.data.spo2 !== undefined && (
                     <div className="text-center p-3 bg-red-100/50 rounded-lg">
                         <div className="text-2xl font-bold text-red-600">{reading.data.spo2}%</div>
-                        <div className="text-xs text-slate-600">SpO₂</div>
+                        <div className="text-xs text-zinc-600">SpO₂</div>
                     </div>
                 )}
                  {reading.data.heartRate !== undefined && (
-                    <div className="text-center p-3 bg-blue-100/50 rounded-lg">
-                        <div className="text-2xl font-bold text-blue-600">{reading.data.heartRate}</div>
-                        <div className="text-xs text-slate-600">{t('deviceManager.heartRateUnit')}</div>
+                    <div className="text-center p-3 bg-indigo-100/50 rounded-lg">
+                        <div className="text-2xl font-bold text-indigo-600">{reading.data.heartRate}</div>
+                        <div className="text-xs text-zinc-600">{t('deviceManager.heartRateUnit')}</div>
                     </div>
                 )}
             </div>
@@ -185,14 +185,14 @@ export function DeviceManager({ isConnected, onConnect, onDisconnect }: DeviceMa
   return (
     <div className="flex flex-col h-full p-1 space-y-4">
       <div className="flex items-center justify-between px-2">
-        <h3 className="text-lg font-semibold text-slate-800">{t('deviceManager.title')}</h3>
-        <button onClick={handleScan} disabled={isScanning} className="p-2 rounded-full hover:bg-slate-200 transition-colors disabled:opacity-50 disabled:cursor-wait">
-            <RefreshCw className={`w-5 h-5 text-slate-600 ${isScanning ? 'animate-spin' : ''}`} />
+        <h3 className="text-lg font-semibold text-zinc-800">{t('deviceManager.title')}</h3>
+        <button onClick={handleScan} disabled={isScanning} className="p-2 rounded-full hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-wait">
+            <RefreshCw className={`w-5 h-5 text-zinc-600 ${isScanning ? 'animate-spin' : ''}`} />
         </button>
       </div>
 
       <div className="grid grid-cols-3 gap-3 px-2">
-        <StatCard title={t('deviceManager.total')} value={stats.total} icon={<Bluetooth className="h-4 w-4 text-slate-400" />} />
+        <StatCard title={t('deviceManager.total')} value={stats.total} icon={<Bluetooth className="h-4 w-4 text-zinc-400" />} />
         <StatCard title={t('deviceManager.connected')} value={stats.connected} icon={<CheckCircle className="h-4 w-4 text-green-500" />} valueColor="text-green-600" />
         <StatCard title={t('deviceManager.oximeters')} value={stats.byType.oximeter || 0} icon={<HeartPulse className="h-4 w-4 text-red-500" />} valueColor="text-red-600" />
       </div>
@@ -204,7 +204,7 @@ export function DeviceManager({ isConnected, onConnect, onDisconnect }: DeviceMa
         </div>
       )}
 
-      <div className="p-1 bg-slate-200/80 rounded-xl flex items-center">
+      <div className="p-1 bg-zinc-200/80 rounded-xl flex items-center">
         <TabButton isActive={activeTab === 'devices'} onClick={() => setActiveTab('devices')}>{t('deviceManager.devices')}</TabButton>
         <TabButton isActive={activeTab === 'live'} onClick={() => setActiveTab('live')}>{t('deviceManager.liveData')}</TabButton>
       </div>
@@ -213,8 +213,8 @@ export function DeviceManager({ isConnected, onConnect, onDisconnect }: DeviceMa
         {activeTab === 'devices' && (
           <div className="space-y-3">
             {isScanning ? (
-                <div className="text-center py-8 text-slate-500">
-                    <svg className="animate-spin h-6 w-6 text-blue-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <div className="text-center py-8 text-zinc-500">
+                    <svg className="animate-spin h-6 w-6 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
@@ -225,7 +225,7 @@ export function DeviceManager({ isConnected, onConnect, onDisconnect }: DeviceMa
                     <DeviceCard key={device.id} device={device} onConnect={handleConnect} onDisconnect={handleDisconnect} isConnecting={isConnecting} t={t} />
                 ))
             ) : (
-                <div className="text-center py-8 text-slate-500">
+                <div className="text-center py-8 text-zinc-500">
                     <Search className="w-10 h-10 mx-auto mb-2 opacity-50" />
                     <p className="font-semibold">{t('deviceManager.noDevicesFound')}</p>
                     <p className="text-sm">{t('deviceManager.clickToScan')}</p>

@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from '@google/genai';
 import type { PatientData, ChatMessage, RiskLevel, WeatherData, WeatherImpactAnalysis, FactorAnalysis } from '../types';
 import type { Language } from '../contexts/LanguageContext';
@@ -18,7 +17,7 @@ const prompts = {
         proactiveQuestion: (risk: string, vitals: string) => `En vous basant sur les données patient suivantes, générez une question à choix multiples pertinente, empathique et simple en français. La question doit être conversationnelle et facile à comprendre. Évitez le jargon médical. Niveau de risque actuel du patient : ${risk}.\nDonnées:\n${vitals}`,
         analyzeResponse: (q: string, r: string) => `Un patient a reçu la question : "${q}". Le patient a répondu : "${r}". Générez un message de suivi court, empathique et encourageant en français.`,
         weatherImpact: (p: PatientData, w: WeatherData) => `En tant qu'expert médical en IA, analysez l'impact de la météo sur un patient BPCO. Patient : ${p.condition}, Météo : ${w.temperature}°C, ${w.humidity}% humidité, IQA: ${w.airQualityIndex}. Rédigez un résumé concis (max 40 mots, en français) de l'impact potentiel.`,
-        predictionAnalysis: (p: PatientData, score: number, level: string) => `En tant qu'IA médicale experte, analysez les données pour un patient BPCO. Score de Risque : ${score} (Niveau : ${level}). Identifiez les 3 facteurs les plus importants contribuant au score et proposez 3 recommandations claires et réalisables pour un médecin. La réponse doit être en français.`
+        predictionAnalysis: (p: PatientData, score: number, level: string) => `En tant qu'IA médicale experte, analysez les données pour un patient BPCO. Score de Risque : ${score} (Niveau : ${level}). Fournissez d'abord un résumé concis (2-3 phrases) expliquant la situation globale du patient. Ensuite, identifiez les 3 facteurs les plus importants contribuant au score. Enfin, proposez 3 recommandations claires et réalisables pour un médecin. La réponse doit être en français.`
     },
     en: {
         systemInstruction: (d?: PatientData) => `You are "Sentinel AI", a friendly and empathetic AI health assistant for COPD patients. Your tone should always be reassuring, simple, and encouraging. You are not a doctor and must never give a diagnosis. Your role is to help the patient monitor their condition and communicate with their care team. Current patient context: ${d?.condition || 'N/A'}, Age: ${d?.age || 'N/A'}.`,
@@ -26,7 +25,7 @@ const prompts = {
         proactiveQuestion: (risk: string, vitals: string) => `Based on the following patient data, generate a relevant, empathetic, and simple multiple-choice question in English. The question should be conversational and easy to understand. Avoid medical jargon. Patient's current risk level: ${risk}.\nData:\n${vitals}`,
         analyzeResponse: (q: string, r: string) => `A patient was asked: "${q}". The patient replied: "${r}". Generate a short, empathetic, and encouraging follow-up message in English.`,
         weatherImpact: (p: PatientData, w: WeatherData) => `As an AI medical expert, analyze the impact of the weather on a COPD patient. Patient: ${p.condition}, Weather: ${w.temperature}°C, ${w.humidity}% humidity, AQI: ${w.airQualityIndex}. Write a concise summary (max 40 words, in English) of the potential impact.`,
-        predictionAnalysis: (p: PatientData, score: number, level: string) => `As an expert medical AI, analyze the data for a COPD patient. Risk Score: ${score} (Level: ${level}). Identify the 3 most important factors contributing to the score and provide 3 clear, actionable recommendations for a doctor. The response must be in English.`
+        predictionAnalysis: (p: PatientData, score: number, level: string) => `As an expert medical AI, analyze the data for a COPD patient. Risk Score: ${score} (Level: ${level}). First, provide a concise summary (2-3 sentences) explaining the patient's overall situation. Then, identify the 3 most important factors contributing to the score. Finally, provide 3 clear, actionable recommendations for a doctor. The response must be in English.`
     },
     ar: {
         systemInstruction: (d?: PatientData) => `أنت "الرقيب AI"، مساعد صحي ذكي وداعم لمرضى الانسداد الرئوي المزمن. يجب أن تكون نبرتك دائمًا مطمئنة وبسيطة ومشجعة. أنت لست طبيبًا ويجب ألا تقدم تشخيصًا أبدًا. دورك هو مساعدة المريض على مراقبة حالته والتواصل مع فريق الرعاية الخاص به. سياق المريض الحالي: ${d?.condition || 'غير متوفر'}, العمر: ${d?.age || 'غير متوفر'}.`,
@@ -34,7 +33,7 @@ const prompts = {
         proactiveQuestion: (risk: string, vitals: string) => `بناءً على بيانات المريض التالية، قم بإنشاء سؤال مناسب ومتعاطف وبسيط بصيغة الاختيار من متعدد باللغة العربية. يجب أن يكون السؤال حواريًا وسهل الفهم. تجنب المصطلحات الطبية. مستوى الخطورة الحالي للمريض: ${risk}.\nالبيانات:\n${vitals}`,
         analyzeResponse: (q: string, r: string) => `تم طرح السؤال التالي على المريض: "${q}". أجاب المريض: "${r}". قم بإنشاء رسالة متابعة قصيرة وداعمة ومشجعة باللغة العربية.`,
         weatherImpact: (p: PatientData, w: WeatherData) => `كخبير طبي في الذكاء الاصطناعي، قم بتحليل تأثير الطقس على مريض الانسداد الرئوي المزمن. المريض: ${p.condition}، الطقس: ${w.temperature}°م، ${w.humidity}% رطوبة، مؤشر جودة الهواء: ${w.airQualityIndex}. اكتب ملخصًا موجزًا (بحد أقصى 40 كلمة، باللغة العربية) للتأثير المحتمل.`,
-        predictionAnalysis: (p: PatientData, score: number, level: string) => `بصفتك ذكاءً اصطناعيًا طبيًا خبيرًا، قم بتحليل بيانات مريض الانسداد الرئوي المزمن. درجة الخطورة: ${score} (المستوى: ${level}). حدد أهم 3 عوامل مساهمة في النتيجة وقدم 3 توصيات واضحة وقابلة للتنفيذ للطبيب. يجب أن تكون الإجابة باللغة العربية.`
+        predictionAnalysis: (p: PatientData, score: number, level: string) => `بصفتك ذكاءً اصطناعيًا طبيًا خبيرًا، قم بتحليل بيانات مريض الانسداد الرئوي المزمن. درجة الخطورة: ${score} (المستوى: ${level}). أولاً، قدم ملخصًا موجزًا (2-3 جمل) يشرح الوضع العام للمريض. بعد ذلك، حدد أهم 3 عوامل مساهمة في النتيجة. أخيرًا، قدم 3 توصيات واضحة وقابلة للتنفيذ للطبيب. يجب أن تكون الإجابة باللغة العربية.`
     }
 };
 
@@ -51,7 +50,7 @@ const mockAi = {
             await new Promise(res => setTimeout(res, 500));
             const content = params.contents[0]?.parts[0]?.text || "";
             if (content.includes("expert medical AI") || content.includes("خبيرًا")) { // Prediction
-                return { text: JSON.stringify({ contributingFactors: [{ name: 'Mobility Drop (mock)', impact: 'high', description: "Steps are 45% below average." }], recommendations: ["Schedule consultation (mock)."] })};
+                return { text: JSON.stringify({ summary: "Patient shows signs of decline due to reduced mobility (mock).", contributingFactors: [{ name: 'Mobility Drop (mock)', impact: 'high', description: "Steps are 45% below average." }], recommendations: ["Schedule consultation (mock)."] })};
             }
             if (params.config?.responseSchema?.properties?.impactLevel) { // Weather
                 return { text: JSON.stringify({ impactLevel: "Medium", summary: "High humidity may increase irritation. Caution advised." })};
@@ -168,17 +167,30 @@ export async function analyzeWeatherImpact(patient: PatientData, weather: Weathe
         return JSON.parse(response.text) as WeatherImpactAnalysis;
     } catch (error) {
         console.error("Error analyzing weather impact:", error);
-        // FIX: Explicitly type the fallback object to match WeatherImpactAnalysis and resolve type error.
-        const fallbacks: { [key in Language]: WeatherImpactAnalysis } = {
-            fr: { impactLevel: 'Medium', summary: "L'analyse IA n'a pas pu être effectuée. Recommandation standard : surveiller les symptômes dans des conditions extrêmes." },
-            en: { impactLevel: 'Medium', summary: "AI analysis could not be performed. Standard recommendation: monitor symptoms in extreme conditions." },
-            ar: { impactLevel: 'Medium', summary: "تعذر إجراء تحليل الذكاء الاصطناعي. توصية قياسية: مراقبة الأعراض في الظروف القاسية." }
+
+        const errorDetail = (error as any)?.cause?.error || (error as any)?.error || error;
+        let errorMessage: string;
+
+        if (errorDetail?.code === 429 || errorDetail?.status === 'RESOURCE_EXHAUSTED') {
+            errorMessage = "API quota has been exceeded. Please check your plan and billing details.";
+        } else {
+            errorMessage = "The AI impact analysis could not be performed. Please try again later.";
+        }
+
+        const fallbacks: { [key in Language]: { impactLevel: 'Medium', summary: string } } = {
+            fr: { impactLevel: 'Medium', summary: "Analyse IA indisponible." },
+            en: { impactLevel: 'Medium', summary: "AI analysis unavailable." },
+            ar: { impactLevel: 'Medium', summary: "تحليل الذكاء الاصطناعي غير متوفر." }
         };
-        return fallbacks[lang];
+        
+        return {
+            ...fallbacks[lang],
+            error: errorMessage
+        };
     }
 }
 
-export async function analyzePatientDataForPrediction(patient: PatientData, riskScore: number, level: RiskLevel, lang: Language): Promise<{ contributingFactors: FactorAnalysis[], recommendations: string[] }> {
+export async function analyzePatientDataForPrediction(patient: PatientData, riskScore: number, level: RiskLevel, lang: Language): Promise<{ summary: string, contributingFactors: FactorAnalysis[], recommendations: string[], error?: string }> {
     const riskTranslations = { fr: { High: 'Élevé', Medium: 'Moyen', Low: 'Faible' }, en: { High: 'High', Medium: 'Medium', Low: 'Low' }, ar: { High: 'مرتفع', Medium: 'متوسط', Low: 'منخفض' } };
     const prompt = prompts[lang].predictionAnalysis(patient, riskScore, riskTranslations[lang][level]);
     try {
@@ -191,22 +203,38 @@ export async function analyzePatientDataForPrediction(patient: PatientData, risk
                 responseSchema: {
                     type: Type.OBJECT,
                     properties: {
+                        summary: { type: Type.STRING },
                         contributingFactors: { type: Type.ARRAY, items: { type: Type.OBJECT, properties: { name: { type: Type.STRING }, impact: { type: Type.STRING, enum: ['high', 'medium', 'low'] }, description: { type: Type.STRING } }, required: ['name', 'impact', 'description'] } },
                         recommendations: { type: Type.ARRAY, items: { type: Type.STRING } }
                     },
-                    required: ['contributingFactors', 'recommendations']
+                    required: ['summary', 'contributingFactors', 'recommendations']
                 }
             }
         });
         return JSON.parse(response.text);
     } catch (error) {
         console.error("Error analyzing patient data for prediction:", error);
-        // FIX: Explicitly type the fallback object to ensure 'impact' matches the FactorAnalysis type.
-        const fallbacks: { [key in Language]: { contributingFactors: FactorAnalysis[], recommendations: string[] } } = {
-            fr: { contributingFactors: [{ name: 'Erreur d\'analyse IA', impact: 'high', description: 'Le service de prédiction a échoué. Veuillez vérifier les données brutes du patient.' }], recommendations: ['Vérifiez manuellement les signes vitaux et les données du smartphone.'] },
-            en: { contributingFactors: [{ name: 'AI Analysis Error', impact: 'high', description: 'Prediction service failed. Please check raw patient data.' }], recommendations: ['Manually check vitals and smartphone data.'] },
-            ar: { contributingFactors: [{ name: 'خطأ في تحليل الذكاء الاصطناعي', impact: 'high', description: 'فشل خدمة التنبؤ. يرجى التحقق من بيانات المريض الأولية.' }], recommendations: ['تحقق يدويًا من العلامات الحيوية وبيانات الهاتف الذكي.'] }
+
+        const errorDetail = (error as any)?.cause?.error || (error as any)?.error || error;
+        let errorMessage: string;
+        
+        if (errorDetail?.code === 429 || errorDetail?.status === 'RESOURCE_EXHAUSTED') {
+            errorMessage = "API quota has been exceeded. Please check your plan and billing details.";
+        } else {
+            errorMessage = "The AI prediction service failed to generate an analysis. Please try again.";
+        }
+        
+        const fallbacks: { [key in Language]: { summary: string, contributingFactors: FactorAnalysis[], recommendations: string[] } } = {
+            fr: { summary: "L'analyse IA n'a pas pu être complétée.", contributingFactors: [{ name: 'Erreur d\'analyse IA', impact: 'high', description: errorMessage }], recommendations: ['Vérifiez manuellement les signes vitaux et les données du smartphone.'] },
+            en: { summary: "The AI analysis could not be completed.", contributingFactors: [{ name: 'AI Analysis Error', impact: 'high', description: errorMessage }], recommendations: ['Manually check vitals and smartphone data.'] },
+            ar: { summary: "لم يتمكن تحليل الذكاء الاصطناعي من الاكتمال.", contributingFactors: [{ name: 'خطأ في تحليل الذكاء الاصطناعي', impact: 'high', description: errorMessage }], recommendations: ['تحقق يدويًا من العلامات الحيوية وبيانات الهاتف الذكي.'] }
         };
-        return fallbacks[lang];
+
+        const fallbackData = fallbacks[lang];
+
+        return { 
+            ...fallbackData,
+            error: errorMessage
+        };
     }
 }

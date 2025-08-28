@@ -34,19 +34,19 @@ const getTrend = (measurements: PatientData['measurements']): Trend => {
 };
 
 const StatCard = ({ title, value, icon, valueColor }: {title: string, value: string | number, icon: React.ReactNode, valueColor?: string}) => (
-    <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-sm col-span-1">
+    <div className="bg-white p-4 rounded-2xl shadow-sm border border-zinc-200 col-span-1 transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1">
         <div className="flex items-center justify-between pb-2">
-            <h3 className="text-sm font-medium text-slate-500">{title}</h3>
+            <h3 className="text-sm font-medium text-zinc-500">{title}</h3>
             {icon}
         </div>
         <div>
-            <p className={`text-2xl font-bold ${valueColor || 'text-slate-800'}`}>{value}</p>
+            <p className={`text-2xl font-bold ${valueColor || 'text-zinc-800'}`}>{value}</p>
         </div>
     </div>
 );
 
 const TabButton = ({ isActive, onClick, children }: { isActive: boolean, onClick: () => void, children: React.ReactNode }) => (
-    <button onClick={onClick} className={`px-4 py-2 text-sm font-semibold rounded-md ${isActive ? 'bg-white shadow text-blue-600' : 'text-slate-600 hover:bg-slate-200/50'}`}>
+    <button onClick={onClick} className={`flex items-center justify-center w-full px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors ${isActive ? 'bg-white shadow text-indigo-600' : 'text-zinc-600 hover:bg-white/70'}`}>
         {children}
     </button>
 );
@@ -112,16 +112,16 @@ export function DoctorDashboard({ patients, alerts, onPatientAdded }: DoctorDash
 
     const getRiskClasses = (level: RiskLevel) => {
         switch(level) {
-            case 'High': return { color: 'text-red-600', dot: 'bg-red-500', row: 'bg-red-50/50' };
-            case 'Medium': return { color: 'text-yellow-600', dot: 'bg-yellow-500', row: 'bg-yellow-50/50' };
-            case 'Low': return { color: 'text-green-600', dot: 'bg-green-500', row: '' };
+            case 'High': return { color: 'text-red-700', bg: 'bg-red-100' };
+            case 'Medium': return { color: 'text-yellow-700', bg: 'bg-yellow-100' };
+            case 'Low': return { color: 'text-green-700', bg: 'bg-green-100' };
         }
     };
 
     const TrendIcon = ({ trend }: { trend: Trend }) => {
         if (trend === 'improving') return <TrendingUp className="h-5 w-5 text-green-500" />;
         if (trend === 'worsening') return <TrendingDown className="h-5 w-5 text-red-500" />;
-        return <Activity className="h-5 w-5 text-blue-500" />;
+        return <Activity className="h-5 w-5 text-indigo-500" />;
     };
 
     const AlertIcon = ({ type }: { type: AlertData['type'] }) => {
@@ -142,38 +142,36 @@ export function DoctorDashboard({ patients, alerts, onPatientAdded }: DoctorDash
                 onAddPatient={handleAddPatient}
             />
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-                <StatCard title={t('doctorDashboard.totalPatients')} value={patients.length} icon={<Users className="h-5 w-5 text-slate-400" />} />
+                <StatCard title={t('doctorDashboard.totalPatients')} value={patients.length} icon={<Users className="h-5 w-5 text-zinc-400" />} />
                 <StatCard title={t('doctorDashboard.critical')} value={criticalCount} icon={<AlertTriangle className="h-5 w-5 text-red-500" />} valueColor="text-red-600" />
                 <StatCard title={t('doctorDashboard.warnings')} value={warningCount} icon={<Activity className="h-5 w-5 text-yellow-500" />} valueColor="text-yellow-600" />
                 <StatCard title={t('doctorDashboard.stable')} value={stableCount} icon={<HeartPulse className="h-5 w-5 text-green-500" />} valueColor="text-green-600" />
             </div>
 
-            <div className="bg-white/50 backdrop-blur-sm p-2 rounded-xl shadow-sm">
-                <div className="p-1 bg-slate-200/50 rounded-lg flex items-center space-x-1 rtl:space-x-reverse">
-                    <TabButton isActive={activeTab === 'patients'} onClick={() => setActiveTab('patients')}>{t('doctorDashboard.patients')}</TabButton>
-                    <TabButton isActive={activeTab === 'alerts'} onClick={() => setActiveTab('alerts')}>
-                       {t('doctorDashboard.alerts')} <span className="ml-2 mr-0 rtl:mr-2 rtl:ml-0 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">{alerts.length}</span>
-                    </TabButton>
-                </div>
+            <div className="bg-zinc-200/70 p-1.5 rounded-xl flex items-center space-x-1 rtl:space-x-reverse">
+                <TabButton isActive={activeTab === 'patients'} onClick={() => setActiveTab('patients')}>{t('doctorDashboard.patients')}</TabButton>
+                <TabButton isActive={activeTab === 'alerts'} onClick={() => setActiveTab('alerts')}>
+                   {t('doctorDashboard.alerts')} <span className="ml-2 mr-0 rtl:mr-2 rtl:ml-0 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">{alerts.length}</span>
+                </TabButton>
             </div>
 
             {activeTab === 'patients' && (
-                 <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-sm space-y-4">
+                 <div className="bg-white p-4 rounded-2xl shadow-sm border border-zinc-200 space-y-4">
                     <div className="flex flex-col sm:flex-row gap-4">
                         <div className="relative flex-grow">
-                            <Search className="absolute left-3 right-auto rtl:right-3 rtl:left-auto top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <Search className="absolute left-3 right-auto rtl:right-3 rtl:left-auto top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
                             <input
                                 type="text"
                                 placeholder={t('doctorDashboard.searchPlaceholder')}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 rtl:pr-10 rtl:pl-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                className="w-full pl-10 pr-4 rtl:pr-10 rtl:pl-4 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                             />
                         </div>
                          <select 
                             value={statusFilter}
                             onChange={e => setStatusFilter(e.target.value as RiskLevel | 'All')}
-                            className="w-full sm:w-48 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            className="w-full sm:w-48 px-4 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white"
                          >
                              <option value="All">{t('doctorDashboard.allStatuses')}</option>
                              <option value="Low">{t('doctorDashboard.riskLow')}</option>
@@ -182,21 +180,21 @@ export function DoctorDashboard({ patients, alerts, onPatientAdded }: DoctorDash
                          </select>
                          <button 
                             onClick={() => setAddPatientModalOpen(true)}
-                            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-indigo-800 transition-all duration-300 shadow hover:shadow-md"
                         >
                             <PlusCircle className="w-5 h-5" />
                             <span>{t('doctorDashboard.addPatient')}</span>
                          </button>
                     </div>
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left rtl:text-right text-slate-600">
-                            <thead className="text-xs text-slate-700 uppercase bg-slate-100/50">
+                        <table className="w-full text-sm text-left rtl:text-right text-zinc-600">
+                            <thead className="text-xs text-zinc-700 uppercase bg-zinc-50">
                                 <tr>
                                     <th scope="col" className="px-6 py-3">{t('doctorDashboard.table.patient')}</th>
                                     <th scope="col" className="px-6 py-3">{t('doctorDashboard.table.riskScore')}</th>
                                     <th scope="col" className="px-6 py-3">{t('doctorDashboard.table.adherence')}</th>
                                     <th scope="col" className="px-6 py-3">{t('doctorDashboard.table.vitals')}</th>
-                                    <th scope="col" className="px-6 py-3">{t('doctorDashboard.table.trend')}</th>
+                                    <th scope="col" className="px-6 py-3 text-center">{t('doctorDashboard.table.trend')}</th>
                                     <th scope="col" className="px-6 py-3">{t('doctorDashboard.table.status')}</th>
                                     <th scope="col" className="px-6 py-3">{t('doctorDashboard.table.actions')}</th>
                                 </tr>
@@ -204,23 +202,26 @@ export function DoctorDashboard({ patients, alerts, onPatientAdded }: DoctorDash
                             <tbody>
                                 {filteredPatients.map(p => {
                                     const latestMeasurement = p.measurements.length > 0 ? p.measurements[p.measurements.length - 1] : null;
-                                    const vitalsText = latestMeasurement ? `${latestMeasurement.spo2}% / ${latestMeasurement.heartRate} bpm` : '-- / --';
+                                    const vitalsText = latestMeasurement ? `${latestMeasurement.spo2}% / ${latestMeasurement.heartRate}` : '-- / --';
                                     const adherenceColor = p.adherence < 75 ? 'text-red-600' : p.adherence < 90 ? 'text-yellow-600' : 'text-green-600';
+                                    const riskClasses = getRiskClasses(p.risk.level);
 
                                     return (
                                         <tr 
                                             key={p.id} 
-                                            className={`border-b border-slate-200/80 ${getRiskClasses(p.risk.level).row} hover:bg-blue-50/50 cursor-pointer transition-colors duration-150`}
+                                            className="border-b border-zinc-200 hover:bg-zinc-50 hover:shadow-md cursor-pointer transition-all duration-200"
                                             onClick={() => setSelectedPatientId(p.id)}
                                         >
-                                            <td className="px-6 py-4 font-medium text-slate-900">{p.name}<div className="font-normal text-slate-500 text-xs">{t('doctorDashboard.yearsOld', { age: p.age })}</div></td>
-                                            <td className="px-6 py-4"><div className="flex items-center gap-2 font-semibold">{p.risk.score} <span className={`h-2 w-2 rounded-full ${getRiskClasses(p.risk.level).dot}`}></span></div></td>
+                                            <td className="px-6 py-4 font-medium text-zinc-900">{p.name}<div className="font-normal text-zinc-500 text-xs">{t('doctorDashboard.yearsOld', { age: p.age })}</div></td>
+                                            <td className="px-6 py-4"><div className="flex items-center gap-2 font-semibold text-zinc-800">{p.risk.score} <span className={`h-2 w-2 rounded-full ${riskClasses.bg.replace('bg-', 'bg-opacity-50 border border-').replace('100', '500')}`}></span></div></td>
                                             <td className={`px-6 py-4 font-semibold ${adherenceColor}`}>{p.adherence}%</td>
-                                            <td className="px-6 py-4">{vitalsText}</td>
-                                            <td className="px-6 py-4"><TrendIcon trend={p.trend} /></td>
-                                            <td className={`px-6 py-4 font-semibold ${getRiskClasses(p.risk.level).color}`}>{translateRiskLevel(p.risk.level)}</td>
+                                            <td className="px-6 py-4 font-mono">{vitalsText}</td>
+                                            <td className="px-6 py-4"><div className="flex justify-center"><TrendIcon trend={p.trend} /></div></td>
                                             <td className="px-6 py-4">
-                                                 <button onClick={(e) => { e.stopPropagation(); setSelectedPatientId(p.id); }} className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700">
+                                                <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${riskClasses.bg} ${riskClasses.color}`}>{translateRiskLevel(p.risk.level)}</span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                 <button onClick={(e) => { e.stopPropagation(); setSelectedPatientId(p.id); }} className="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors">
                                                     {t('doctorDashboard.details')}
                                                 </button>
                                             </td>
@@ -236,14 +237,14 @@ export function DoctorDashboard({ patients, alerts, onPatientAdded }: DoctorDash
             {activeTab === 'alerts' && (
                 <div className="space-y-3">
                     {alerts.map(alert => (
-                        <div key={alert.id} className={`bg-white/80 backdrop-blur-sm p-4 rounded-xl shadow-sm flex items-start gap-4 border-l-4 rtl:border-r-4 rtl:border-l-0 ${alert.severity === 'high' ? 'border-red-500' : alert.severity === 'medium' ? 'border-yellow-500' : 'border-blue-500'}`}>
+                        <div key={alert.id} className={`bg-white p-4 rounded-xl shadow-sm flex items-start gap-4 border-l-4 rtl:border-r-4 rtl:border-l-0 transition-all duration-200 hover:shadow-md hover:border-l-8 rtl:hover:border-r-8 rtl:hover:border-l-0 ${alert.severity === 'high' ? 'border-red-500' : alert.severity === 'medium' ? 'border-yellow-500' : 'border-blue-500'}`}>
                            <div className="pt-1"><AlertIcon type={alert.type} /></div>
                            <div className="flex-grow">
-                                <p className="font-semibold text-slate-800">{alert.patientName}</p>
-                                <p className="text-sm text-slate-600">{alert.message}</p>
-                                <p className="text-xs text-slate-400 mt-1">{alert.timestamp.toLocaleString()}</p>
+                                <p className="font-semibold text-zinc-800">{alert.patientName}</p>
+                                <p className="text-sm text-zinc-600">{alert.message}</p>
+                                <p className="text-xs text-zinc-400 mt-1">{alert.timestamp.toLocaleString()}</p>
                            </div>
-                           <button onClick={() => setSelectedPatientId(alert.patientId)} className="text-sm bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700">
+                           <button onClick={() => setSelectedPatientId(alert.patientId)} className="text-sm bg-indigo-600 text-white px-3 py-1 rounded-lg hover:bg-indigo-700 transition-colors">
                                 {t('doctorDashboard.view')}
                            </button>
                         </div>

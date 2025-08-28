@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export const HeartPulse = (props: React.SVGProps<SVGSVGElement>) => (
@@ -227,4 +226,16 @@ export const Volume2 = (props: React.SVGProps<SVGSVGElement>) => (
 
 export const Square = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+);
+
+export const AudioLines = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M2 10v4"/><path d="M6 7v10"/><path d="M10 4v16"/><path d="M14 7v10"/><path d="M18 10v4"/><path d="M22 10v4"/></svg>
+);
+
+export const SmokingOff = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="2" x2="22" y1="2" y2="22"/><path d="M12 12H2v4h7.5a4.5 4.5 0 0 1 4.5-4.5Z"/><path d="M18 12h-5.5a4.5 4.5 0 0 0-4.5 4.5V16"/><path d="M22 12v4"/><path d="M18 8c0-2.5 2-2.5 2-5"/><path d="M22 8c0-2.5-2-2.5-2-5"/></svg>
+);
+
+export const Cigarette = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 12H2v4h16"/><path d="M22 12v4"/><path d="M7 12a2 2 0 0 0-2-2"/><path d="M18 8c0-2.5 2-2.5 2-5"/><path d="M22 8c0-2.5-2-2.5-2-5"/></svg>
 );

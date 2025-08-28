@@ -5,7 +5,6 @@ import { analyzePatientDataForPrediction } from './geminiService';
 
 class PredictionService {
     private static instance: PredictionService;
-    private intervalId: number | null = null;
     private callbacks: Set<(data: CompletePrediction) => void> = new Set();
     private allPatients: PatientData[] = getDoctorDashboardData();
     private currentPatient: PatientData | null = null;
@@ -22,36 +21,26 @@ class PredictionService {
         return PredictionService.instance;
     }
 
-    public startStreaming(patientId: number, lang: Language, t: TFunction) {
-        this.stopStreaming();
+    public startService(patientId: number, lang: Language, t: TFunction) {
+        this.stopService();
         this.currentPatient = this.allPatients.find(p => p.id === patientId) || null;
         this.currentLang = lang;
         this.currentT = t;
-
-        if (!this.currentPatient) {
-            console.error(`Patient with ID ${patientId} not found.`);
-            return;
-        }
-
-        const runPrediction = async () => {
-            try {
-                await this.generatePrediction();
-            } catch (error) {
-                console.error("Error during prediction generation:", error);
-            }
-        };
-
-        runPrediction(); // Initial prediction
-        this.intervalId = setInterval(runPrediction, 10000) as unknown as number;
     }
 
-    public stopStreaming() {
-        if (this.intervalId) {
-            clearInterval(this.intervalId);
-            this.intervalId = null;
-        }
+    public stopService() {
         this.lastPrediction = null;
         this.currentPatient = null;
+    }
+
+    public async refreshPrediction(): Promise<void> {
+        try {
+            await this.generatePrediction();
+        } catch (error) {
+            console.error("Error during prediction generation:", error);
+            // Propagate error to be handled by UI
+            throw error;
+        }
     }
 
     public onUpdate(callback: (data: CompletePrediction) => void): () => void {
@@ -69,19 +58,31 @@ class PredictionService {
     }
 
     private async generatePrediction() {
-        if (!this.currentPatient) return;
+        const patientForPrediction = this.currentPatient;
+        if (!patientForPrediction) {
+            return;
+        }
+
+        if (!patientForPrediction.measurements) {
+            patientForPrediction.measurements = [];
+        }
         
-        const { score, level } = calculateRiskScore(this.currentPatient);
+        const { score, level } = calculateRiskScore(patientForPrediction);
 
         // Simulate fluctuation for display
         const riskScore = Math.min(100, Math.max(0, score + (Math.random() - 0.5) * 5));
         const confidence = 85 + (Math.random() - 0.5) * 10;
         
         // --- Use Gemini for analysis ---
-        const { contributingFactors, recommendations } = await analyzePatientDataForPrediction(this.currentPatient, score, level, this.currentLang);
+        const { summary, contributingFactors, recommendations, error } = await analyzePatientDataForPrediction(patientForPrediction, score, level, this.currentLang);
+
+        // After the async operation, check if the patient context has changed. If so, abort to avoid updating with stale data.
+        if (this.currentPatient?.id !== patientForPrediction.id) {
+            return;
+        }
 
         // --- Keep mock data for other visual elements ---
-        const alerts = this.generateAlerts(level);
+        const alerts = this.generateAlerts(level, patientForPrediction);
         const activityData = this.generateActivityData();
         
         let levels: ['high' | 'medium' | 'low', 'high' | 'medium' | 'low', 'high' | 'medium' | 'low'];
@@ -101,28 +102,32 @@ class PredictionService {
 
 
         this.lastPrediction = {
-            patientId: this.currentPatient.id,
+            patientId: patientForPrediction.id,
             riskScore: Math.round(riskScore),
             confidence: Math.round(confidence),
             timeHorizon: 24 + Math.round(Math.random() * 48),
+            summary,
             contributingFactors,
             alerts,
             recommendations,
             lastUpdate: new Date().toISOString(),
             activityData,
             heatmapData,
+            error,
         };
         
         this.notifyUpdates();
     }
     
-    private generateAlerts(level: RiskLevel): AnomalyAlert[] {
+    private generateAlerts(level: RiskLevel, patient: PatientData): AnomalyAlert[] {
+        const measurements = patient.measurements || [];
         if (level === 'High' && Math.random() > 0.5) {
+            const lastMeasurement = measurements.length > 0 ? measurements.slice(-1)[0] : null;
             return [{
                 id: `alert-${Date.now()}`,
                 type: 'vital_sign_anomaly',
                 severity: 'high',
-                description: `SpO₂ drop detected. Current: ${this.currentPatient?.measurements.slice(-1)[0].spo2}%`,
+                description: `SpO₂ drop detected. Current: ${lastMeasurement ? `${lastMeasurement.spo2}%` : 'N/A'}`,
                 timestamp: new Date(),
                 confidence: 95
             }];

@@ -13,13 +13,13 @@ interface ChatbotProps {
 }
 
 const QuickResponsePanel = ({ options, onSelect }: { options: string[], onSelect: (option: string) => void}) => (
-    <div className="p-4 border-t border-slate-200 animate-fade-in">
+    <div className="p-4 border-t border-zinc-200 animate-fade-in">
         <div className="grid grid-cols-1 gap-2">
             {options.map((option, index) => (
                 <button
                     key={index}
                     onClick={() => onSelect(option)}
-                    className="w-full px-4 py-2 text-sm font-semibold text-blue-700 bg-blue-100 border border-blue-200 rounded-lg hover:bg-blue-200 transition-colors text-center"
+                    className="w-full px-4 py-2 text-sm font-semibold text-indigo-700 bg-indigo-100 border border-indigo-200 rounded-lg hover:bg-indigo-200 transition-colors text-center"
                 >
                     {option}
                 </button>
@@ -102,22 +102,22 @@ export function Chatbot({ history, onSendMessage, isAiTyping }: ChatbotProps): R
   
   return (
     <div className="flex flex-col h-full">
-      <header className="p-4 border-b border-slate-200 flex items-center">
-         <div className="bg-blue-100 p-2 rounded-full mr-3 ml-0 rtl:ml-3 rtl:mr-0">
-             <Bot className="w-6 h-6 text-blue-600" />
+      <header className="p-4 border-b border-zinc-200 flex items-center">
+         <div className="bg-indigo-100 p-2 rounded-full mr-3 ml-0 rtl:ml-3 rtl:mr-0">
+             <Bot className="w-6 h-6 text-indigo-600" />
          </div>
-        <h2 className="text-lg font-semibold text-slate-800">{t('chatbot.title')}</h2>
+        <h2 className="text-lg font-semibold text-zinc-800">{t('chatbot.title')}</h2>
       </header>
       
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {history.map((msg, index) => (
           <div key={index} className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            {msg.role === 'model' && <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center self-start flex-shrink-0"><Bot className="w-5 h-5 text-slate-500"/></div>}
+            {msg.role === 'model' && <div className="w-8 h-8 bg-zinc-200 rounded-full flex items-center justify-center self-start flex-shrink-0"><Bot className="w-5 h-5 text-zinc-500"/></div>}
             <div
-              className={`max-w-[80%] rounded-2xl px-4 py-2 ${
+              className={`max-w-[80%] rounded-2xl px-4 py-2 transition-transform duration-200 hover:scale-[1.02] ${
                 msg.role === 'user'
-                  ? 'bg-blue-600 text-white rounded-br-lg rtl:rounded-bl-lg rtl:rounded-br-none'
-                  : 'bg-slate-200 text-slate-800 rounded-bl-lg rtl:rounded-br-lg rtl:rounded-bl-none'
+                  ? 'bg-indigo-600 text-white rounded-br-lg rtl:rounded-bl-lg rtl:rounded-br-none'
+                  : 'bg-zinc-200 text-zinc-800 rounded-bl-lg rtl:rounded-br-lg rtl:rounded-bl-none'
               }`}
             >
               <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
@@ -125,22 +125,22 @@ export function Chatbot({ history, onSendMessage, isAiTyping }: ChatbotProps): R
              {msg.role === 'model' && isSynthesisSupported && (
                 <button
                     onClick={() => handleToggleSpeak(msg.text, index)}
-                    className="p-2 text-slate-500 hover:bg-slate-200 rounded-full self-center flex-shrink-0"
+                    className="p-2 text-zinc-500 hover:bg-zinc-200 rounded-full self-center flex-shrink-0"
                     aria-label={isSpeaking && currentlySpeakingIndex === index ? t('chatbot.stopReading') : t('chatbot.readMessage')}
                 >
-                    {isSpeaking && currentlySpeakingIndex === index ? <Square className="w-4 h-4 text-slate-600" /> : <Volume2 className="w-4 h-4 text-slate-500" />}
+                    {isSpeaking && currentlySpeakingIndex === index ? <Square className="w-4 h-4 text-zinc-600" /> : <Volume2 className="w-4 h-4 text-zinc-500" />}
                 </button>
             )}
           </div>
         ))}
         {isAiTyping && (
            <div className="flex items-end gap-2 justify-start">
-             <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center self-start flex-shrink-0"><Bot className="w-5 h-5 text-slate-500"/></div>
-             <div className="bg-slate-200 text-slate-800 rounded-2xl rounded-bl-lg rtl:rounded-br-lg rtl:rounded-bl-none px-4 py-3">
+             <div className="w-8 h-8 bg-zinc-200 rounded-full flex items-center justify-center self-start flex-shrink-0"><Bot className="w-5 h-5 text-zinc-500"/></div>
+             <div className="bg-zinc-200 text-zinc-800 rounded-2xl rounded-bl-lg rtl:rounded-br-lg rtl:rounded-bl-none px-4 py-3">
                 <div className="flex items-center justify-center space-x-1 rtl:space-x-reverse">
-                    <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce delay-0"></span>
-                    <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce delay-150"></span>
-                    <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce delay-300"></span>
+                    <span className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce delay-0"></span>
+                    <span className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce delay-150"></span>
+                    <span className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce delay-300"></span>
                 </div>
              </div>
            </div>
@@ -154,14 +154,14 @@ export function Chatbot({ history, onSendMessage, isAiTyping }: ChatbotProps): R
             onSelect={handleSendMessage}
         />
       ) : (
-          <div className="p-4 border-t border-slate-200">
+          <div className="p-4 border-t border-zinc-200">
             <form onSubmit={handleSubmit} className="flex items-center gap-2">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={isListening ? t('chatbot.listening') : t('chatbot.placeholder')}
-                className="flex-1 w-full px-4 py-2 bg-slate-100 border border-slate-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                className="flex-1 w-full px-4 py-2 bg-zinc-100 border border-zinc-300 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
                 disabled={isAiTyping}
               />
                {isRecognitionSupported && (
@@ -169,7 +169,7 @@ export function Chatbot({ history, onSendMessage, isAiTyping }: ChatbotProps): R
                         type="button"
                         onClick={handleToggleListen}
                         disabled={isAiTyping}
-                        className={`relative p-3 rounded-full text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${isListening ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500' : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'} disabled:bg-slate-400`}
+                        className={`relative p-3 rounded-full text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${isListening ? 'bg-gradient-to-r from-red-500 to-red-600 focus:ring-red-500' : 'bg-gradient-to-r from-indigo-600 to-indigo-700 focus:ring-indigo-500'} disabled:bg-zinc-400`}
                         aria-label={isListening ? t('chatbot.stopListening') : t('chatbot.startListening')}
                     >
                         {isListening && <span className="absolute inset-0 bg-white/30 rounded-full animate-ping"></span>}
@@ -179,7 +179,7 @@ export function Chatbot({ history, onSendMessage, isAiTyping }: ChatbotProps): R
               <button
                 type="submit"
                 disabled={isAiTyping || !input.trim() || isListening}
-                className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:bg-slate-400 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="p-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-full hover:from-indigo-700 hover:to-indigo-800 disabled:bg-zinc-400 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                  aria-label={t('chatbot.sendMessage')}
               >
                 <Send className="w-5 h-5" />

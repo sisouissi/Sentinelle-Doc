@@ -16,8 +16,8 @@ const TabButton = ({ id, label, icon, activeTab, setActiveTab }: { id: Smartphon
       onClick={() => setActiveTab(id)}
       className={`flex items-center justify-center w-full px-2 py-2 text-xs font-medium rounded-lg transition-all duration-200 ${
         activeTab === id
-          ? 'bg-blue-600 text-white shadow'
-          : 'bg-slate-200/60 text-slate-600 hover:bg-slate-300/80'
+          ? 'bg-indigo-600 text-white shadow'
+          : 'bg-zinc-200/60 text-zinc-600 hover:bg-zinc-300/80'
       }`}
       aria-pressed={activeTab === id}
     >
@@ -27,12 +27,12 @@ const TabButton = ({ id, label, icon, activeTab, setActiveTab }: { id: Smartphon
   );
 
 const DataCard = ({ label, value, unit, icon, isWarning }: { label: string; value: string | number; unit: string; icon: React.ReactNode; isWarning?: boolean }) => (
-    <div className={`p-3 rounded-lg flex items-center gap-3 ${isWarning ? 'bg-yellow-100/70' : 'bg-slate-100/70'}`}>
-        <div className={`flex-shrink-0 ${isWarning ? 'text-yellow-600' : 'text-slate-500'}`}>{icon}</div>
+    <div className={`p-3 rounded-lg flex items-center gap-3 transition-transform duration-200 hover:scale-105 hover:shadow-sm ${isWarning ? 'bg-yellow-100/70' : 'bg-zinc-100/70'}`}>
+        <div className={`flex-shrink-0 ${isWarning ? 'text-yellow-600' : 'text-zinc-500'}`}>{icon}</div>
         <div>
-            <p className="text-xs text-slate-500">{label}</p>
-            <p className="text-base font-bold text-slate-800">
-                {value} <span className="text-sm font-normal text-slate-600">{unit}</span>
+            <p className="text-xs text-zinc-500">{label}</p>
+            <p className="text-base font-bold text-zinc-800">
+                {value} <span className="text-sm font-normal text-zinc-600">{unit}</span>
             </p>
         </div>
     </div>
@@ -89,15 +89,15 @@ const SleepTab = ({ data, t, language }: { data: SmartphoneDataType['sleep'], t:
             <div className="h-48">
                  <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={sleepHistory} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                        <XAxis dataKey="day" stroke="#9ca3af" fontSize={12} />
-                        <YAxis yAxisId="left" stroke="#8884d8" domain={[0, 12]} unit={t('units.h')} fontSize={12} label={{ value: t('smartphone.sleep.hoursMinutes'), angle: -90, position: 'insideLeft', offset: 10, style: {fontSize: '12px', fill: '#9ca3af'} }}/>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                        <XAxis dataKey="day" stroke="#a1a1aa" fontSize={12} />
+                        <YAxis yAxisId="left" stroke="#8884d8" domain={[0, 12]} unit={t('units.h')} fontSize={12} label={{ value: t('smartphone.sleep.hoursMinutes'), angle: -90, position: 'insideLeft', offset: 10, style: {fontSize: '12px', fill: '#a1a1aa'} }}/>
                         <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" domain={[50, 100]} unit="%" fontSize={12} />
                         <Tooltip
                              contentStyle={{
                                 backgroundColor: 'rgba(255, 255, 255, 0.8)',
                                 backdropFilter: 'blur(4px)',
-                                border: '1px solid #e2e8f0',
+                                border: '1px solid #e5e7eb',
                                 borderRadius: '0.75rem',
                             }}
                         />
@@ -175,8 +175,8 @@ export function SmartphoneData({ data }: SmartphoneDataProps): React.ReactNode {
 
   return (
     <div className="p-1 h-full flex flex-col">
-        <h3 className="text-lg font-semibold text-slate-800 text-center mb-3">{t('smartphone.title')}</h3>
-        <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5 p-1 bg-slate-100 rounded-xl mb-3">
+        <h3 className="text-lg font-semibold text-zinc-800 text-center mb-3">{t('smartphone.title')}</h3>
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5 p-1 bg-zinc-100 rounded-xl mb-3">
             <TabButton id="activity" label={t('smartphone.tabs.activity')} icon={<Footprints className="w-4 h-4"/>} activeTab={activeTab} setActiveTab={setActiveTab} />
             <TabButton id="sleep" label={t('smartphone.tabs.sleep')} icon={<BedDouble className="w-4 h-4"/>} activeTab={activeTab} setActiveTab={setActiveTab} />
             <TabButton id="cough" label={t('smartphone.tabs.cough')} icon={<Lungs className="w-4 h-4"/>} activeTab={activeTab} setActiveTab={setActiveTab} />
