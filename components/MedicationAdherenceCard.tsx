@@ -40,11 +40,9 @@ export function MedicationAdherenceCard({ patient }: MedicationAdherenceCardProp
 
     const StatusIcon = ({ status }: { status: DoseStatus }) => {
         if (status === 'taken') {
-            // FIX: Wrap icon in a span with a title to fix SVG prop type error and add translation.
             return <span title={t('medicationAdherence.taken')}><CheckCircle className="w-5 h-5 text-green-500" /></span>;
         }
         if (status === 'missed') {
-            // FIX: Wrap icon in a span with a title to fix SVG prop type error and add translation.
             return <span title={t('medicationAdherence.missed')}><XCircle className="w-5 h-5 text-red-500" /></span>;
         }
          if (status === 'scheduled') {
@@ -53,20 +51,26 @@ export function MedicationAdherenceCard({ patient }: MedicationAdherenceCardProp
         return <div className="w-4 h-0.5 bg-zinc-200" title={t('medicationAdherence.notApplicable')}></div>;
     };
 
+    const last7Days = useMemo(() => Array.from({ length: 7 }, (_, i) => {
+        const d = new Date();
+        d.setDate(new Date().getDate() - i);
+        d.setHours(0, 0, 0, 0);
+        return d;
+    }).reverse(), []);
+
     const adherenceData = useMemo((): AdherenceData[] => {
         const today = new Date();
-        const last7Days: Date[] = Array.from({ length: 7 }, (_, i) => {
-            const d = new Date();
-            d.setDate(today.getDate() - i);
-            return d;
-        }).reverse();
+
+        if (!patient.medications) {
+            return [];
+        }
 
         return patient.medications
-            .filter(med => med.is_active && med.schedules.some(s => !s.time_of_day.includes('Au besoin')))
+            .filter(med => med && med.is_active && med.schedules && med.schedules.some(s => s && !s.time_of_day.includes('Au besoin')))
             .map(med => {
                 const days: DayStatus[] = last7Days.map(day => {
                     const schedules: ScheduleStatus[] = med.schedules
-                        .filter(s => !s.time_of_day.includes('Au besoin'))
+                        .filter(s => s && !s.time_of_day.includes('Au besoin'))
                         .map(schedule => {
                             const timeMatch = schedule.time_of_day.match(/(\d{2}:\d{2})/);
                             const hour = timeMatch ? parseInt(timeMatch[1].split(':')[0]) : 9;
@@ -93,7 +97,7 @@ export function MedicationAdherenceCard({ patient }: MedicationAdherenceCardProp
                 });
                 return { medication: med, days };
             });
-    }, [patient]);
+    }, [patient, last7Days]);
 
     const getAdherenceGradient = (percent: number) => {
         if (percent < 75) return 'from-red-500 to-red-600';
@@ -131,7 +135,7 @@ export function MedicationAdherenceCard({ patient }: MedicationAdherenceCardProp
                             <thead>
                                 <tr className="bg-zinc-100/70">
                                     <th className="text-left rtl:text-right p-2 font-semibold text-zinc-600">{t('medicationAdherence.medication')}</th>
-                                    {adherenceData[0].days.map(({ date }) => (
+                                    {last7Days.map((date) => (
                                         <th key={date.toISOString()} className="p-2 font-medium text-zinc-500">
                                             {t(`days.short.${dayKeys[date.getDay()]}`)}
                                             <div className="text-xs text-zinc-400">{date.getDate()}</div>

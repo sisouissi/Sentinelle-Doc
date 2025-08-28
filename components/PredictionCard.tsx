@@ -120,37 +120,37 @@ export function PredictionCard({ prediction, onRefresh, isRefreshing }: Predicti
                             <p className="text-sm text-zinc-700">{summary}</p>
                         </div>
                     )}
+                    
+                    <div>
+                        <h4 className="text-sm font-semibold text-zinc-600 mb-2">{t('prediction.factors')}</h4>
+                        <div className="space-y-2">
+                            {(contributingFactors || []).map((factor, index) => (
+                                <div key={index} className="bg-zinc-100/70 p-2.5 rounded-lg transition-colors duration-200 hover:bg-zinc-200/50">
+                                <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <FactorIcon name={factor.name} />
+                                            <span className="text-sm font-medium text-zinc-800">{factor.name}</span>
+                                        </div>
+                                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full capitalize ${getImpactColor(factor.impact)}`}>
+                                            {translateImpact(factor.impact)}
+                                        </span>
+                                </div>
+                                <p className="text-xs text-zinc-500 mt-1 ltr:pl-7 rtl:pr-7">{factor.description}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="mt-4">
+                        <h4 className="text-sm font-semibold text-zinc-600 mb-2">{t('prediction.recommendations')}</h4>
+                        <ul className="space-y-1.5 list-disc ltr:list-inside rtl:list-outside rtl:mr-4 text-sm text-zinc-700">
+                            {(recommendations || []).map((rec, index) => (
+                                <li key={index}>{rec}</li>
+                            ))}
+                        </ul>
+                    </div>
                 </>
             )}
-            
-            <div>
-                <h4 className="text-sm font-semibold text-zinc-600 mb-2">{t('prediction.factors')}</h4>
-                <div className="space-y-2">
-                    {contributingFactors.map((factor, index) => (
-                        <div key={index} className="bg-zinc-100/70 p-2.5 rounded-lg transition-colors duration-200 hover:bg-zinc-200/50">
-                           <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <FactorIcon name={factor.name} />
-                                    <span className="text-sm font-medium text-zinc-800">{factor.name}</span>
-                                </div>
-                                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full capitalize ${getImpactColor(factor.impact)}`}>
-                                    {translateImpact(factor.impact)}
-                                </span>
-                           </div>
-                           <p className="text-xs text-zinc-500 mt-1 ltr:pl-7 rtl:pr-7">{factor.description}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            <div className="mt-4">
-                <h4 className="text-sm font-semibold text-zinc-600 mb-2">{t('prediction.recommendations')}</h4>
-                <ul className="space-y-1.5 list-disc ltr:list-inside rtl:list-outside rtl:mr-4 text-sm text-zinc-700">
-                    {recommendations.map((rec, index) => (
-                        <li key={index}>{rec}</li>
-                    ))}
-                </ul>
-            </div>
         </div>
     );
 }
